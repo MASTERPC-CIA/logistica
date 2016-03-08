@@ -152,6 +152,10 @@ echo Close('div');
         var tipo = 6;
         getChildrens(idParent, subjectChildren, tipo);
     });
+    $('#combo_subtareas').change(function(){
+        //Muestra el div content_detalle_orden
+        $('#content_detalle_orden').show(1000);
+    });
     
     //Extrae los hijos del plan de programs, el subject se utiliza como nombre del combobox
     function getChildrens(idParent, subjectChildren, $tipo){

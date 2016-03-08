@@ -32,4 +32,15 @@ class Ordengasto extends MX_Controller {
 
         echo json_encode($list);
     }
+    
+    //Carga un elemento del detalle de la orden gasto via ajax
+    public function loadDetalleView(){
+        $id_partida = $this->input->post('id_partida');
+        $res['id_partida'] = $id_partida;
+        $res['cod_partida'] = $this->input->post('cod_partida');
+        $res['programa_id'] = $this->input->post('programa_id');
+        $res['count_partidas'] = $this->input->post('count_partidas');
+        $res['presupuesto_inicial'] = $this->generic_model->get_val_where('plan_proyectos', array('id'=>$id_partida), 'presupuesto_inicial');
+        $this->load->view('orden_gasto/partidaDetalle', $res);
+    }
 }
