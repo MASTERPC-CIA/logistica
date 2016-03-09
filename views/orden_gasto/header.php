@@ -13,7 +13,7 @@ echo Open('div');
             echo tagcontent('td ROWSPAN=2', input(array('id'=>'ord_referencia','name'=>'ord_referencia', 'type'=>'text', 'value'=>'')));
             echo tagcontent('td', 'ORDEN DE GASTO N.',array('style'=>'font-weight:900'));
             echo tagcontent('td', input(array('name' => 'ord_numero', 'id' => 'ord_numero', 'readonly'=>'',
-                'class' => 'form-control input-sm', 'style' => 'width:100%', 'value'=>$secuencia)));
+                'class' => 'form-control input-sm', 'style' => 'width:100%', 'value'=>$secuencia + 1)));
         echo Close('tr');
             echo input(array('type'=>'hidden', 'name'=>'ord_nombre_unidad', 'value'=>get_settings("UNIDAD_OPERATIVA")));
             echo tagcontent('td', 'NOMBRE DE LA UNID.:',array('style'=>'font-weight:900'));

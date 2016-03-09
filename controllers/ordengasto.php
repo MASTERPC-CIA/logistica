@@ -4,6 +4,8 @@ if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
 class Ordengasto extends MX_Controller {
+    
+    private  $res_msj = '';
 
     public function __construct() {
         parent::__construct();
@@ -13,6 +15,8 @@ class Ordengasto extends MX_Controller {
 //
         $this->load->library('ordengasto_library');
         $this->load->model('ordengasto_model');
+                $this->load->library('form_validation');
+
     }
 
     public function index() {
@@ -39,25 +43,68 @@ class Ordengasto extends MX_Controller {
     /* Guarda una orden de gasto */
 
     public function save_new() {
-        $this->ordengasto_model->save();
         $ord_fecha = $this->input->post('ord_fecha');
         $ord_hora = date('H:i:s', time());
         $ord_numero = $this->input->post('ord_numero');
-        $ord_referencia= $this->input->post('ord_referencia');
-                    $ord_cod_unidad= $this->input->post('ord_cod_unidad');
-                    $ord_nombre_unidad= $this->input->post('ord_nombre_unidad');
-                    $ord_unidad_ejecutora= $this->input->post('ord_unidad_ejecutora');
-                    $ord_proyecto = null;
-                    $ord_subproyecto = null;
-//                    $ord_gasto_og,
-//                    $ord_iva,
-//                    $ord_total,
-//                    $ord_user_id,
-//                    $ord_user_revision,
-//                    $ord_user_relator,
-//                    $ord_user_aprobacion,
-//                    $ord_estado,
-//                    $ord_observaciones
+        $ord_referencia = $this->input->post('ord_referencia');
+        $ord_cod_unidad = $this->input->post('ord_cod_unidad');
+        $ord_nombre_unidad = $this->input->post('ord_nombre_unidad');
+        $ord_unidad_ejecutora = $this->input->post('ord_unidad_ejecutora');
+        $ord_proyecto = null;
+        $ord_subproyecto = null;
+        $ord_gasto_og = $this->input->post('input_gasto_og');
+        $ord_iva = $this->input->post('input_iva');
+        $ord_total = $this->input->post('input_total');
+        $ord_user_id = $this->user->id;
+        $ord_user_revision = $this->input->post('revisado_por');
+        $ord_user_relator = $this->input->post('relator_pb');
+        $ord_user_aprobacion = $this->input->post('aprobado_por');
+        $array_partidas = $this->input->post('partidas');
+        
+//        $this->form_validation->set_rules('revisado_por', 'REVISADO POR', 'required');
+//        $this->form_validation->set_rules('relator_pb', 'RELATOR DEL PB', 'required');
+//        $this->form_validation->set_rules('aprobado_por', 'APROBADO POR', 'required');
+        
+        //Validamos que se selecione un revisor, relator y aprobador
+        if ($ord_user_revision == '-1' || $ord_user_relator == '-1'  || $ord_user_aprobacion == '-1') {
+            echo info_msg('Debe seleccionar revisor, relator y aprobador');
+            echo tagcontent('script', 'alertaError("Hay campos requeridos")');
+            die();
+        }
+        
+        $this->db->trans_begin();
+
+        $id_orden = $this->ordengasto_model->save(
+                $array_partidas,
+                $ord_fecha,
+                $ord_hora,
+                $ord_numero,
+                $ord_referencia,
+                $ord_cod_unidad,
+                $ord_nombre_unidad,
+                $ord_unidad_ejecutora,
+                $ord_proyecto,
+                $ord_subproyecto,
+                $ord_gasto_og,
+                $ord_iva,
+                $ord_total,
+                $ord_user_id,
+                $ord_user_revision,
+                $ord_user_relator,
+                $ord_user_aprobacion);
+        
+//Verificación de transacción:
+// verifico que todo elproceso en si este bien ejecutado
+        if ($this->db->trans_status() === FALSE) {
+            $this->db->trans_rollback();
+            $this->res_msj .= error_msg('<br>Ha ocurrido un error al guardar la orden.');
+            echo $this->res_msj;
+        } else {
+            $this->res_msj .= success_msg('. Orden de Gasto registrada');
+            echo $this->res_msj;
+            $this->db->trans_commit();
+            echo tagcontent('script', '$("#ordengasto_view").hide(500);');
+        }
     }
 
 }

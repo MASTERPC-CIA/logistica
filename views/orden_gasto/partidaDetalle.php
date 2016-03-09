@@ -10,29 +10,35 @@ switch ($programa_id) {
         $input_beneficiario_search = input(array('type' => 'text', 'id' => 'beneficiario_ruc'.$count_partidas, 'name' => 'beneficiario_ruc',
             'placeholder' => 'Nombre Beneficiario', 'callback' => 'load_beneficiario', 'class'=>'input_beneficiario',
             'data-url' => base_url('common/autosuggest/get_empleado_by_name/%QUERY')));
+        //Hiden tipo empleado
+        echo input(array('type'=>'hidden', 'id'=>'hidden_tipo_beneficiario'.$count_partidas, 'name'=>'partidas['.$count_partidas.'][odet_tipo_beneficiario]', 'value'=>'E'));
         break;
     
     case 17://Programa Alistamiento operacional de las Fuerzas Armadas(57)
         $input_beneficiario_search = input(array('type' => 'text', 'id' => 'beneficiario_ruc'.$count_partidas, 'name' => 'beneficiario_ruc',
             'placeholder' => 'Nombre Beneficiario', 'callback' => 'load_beneficiario', 'class'=>'input_beneficiario',
             'data-url' => base_url('common/autosuggest/get_beneficiario_by_name/%QUERY')));
+        //Hiden tipo beneficiario
+        echo input(array('type'=>'hidden', 'id'=>'hidden_tipo_beneficiario'.$count_partidas, 'name'=>'partidas['.$count_partidas.'][odet_tipo_beneficiario]', 'value'=>'B'));
+
         break;
 }
 /*Hiddens a enviar*/
-echo input(array('type'=>'hidden', 'id'=>'hidden_id_partida'.$count_partidas, 'name'=>'partidas['.$count_partidas.']id_partida', 'value'=>$id_partida));
-echo input(array('type'=>'hidden', 'id'=>'hidden_beneficiario_id'.$count_partidas, 'name'=>'partidas['.$count_partidas.']beneficiario_id', 'value'=>''));
-echo input(array('type'=>'hidden', 'id'=>'hidden_programa_id', 'name'=>'partidas['.$count_partidas.']programa_id', 'value'=>$programa_id));
-echo input(array('type'=>'hidden', 'id'=>'hidden_asignacion'.$count_partidas, 'name'=>'partidas['.$count_partidas.']asignacion', 'value'=>$presupuesto_inicial));
-echo input(array('type'=>'hidden', 'id'=>'hidden_gasto_acumulado'.$count_partidas, 'name'=>'partidas['.$count_partidas.']gasto_acumulado', 'value'=>''));
-echo input(array('type'=>'hidden', 'id'=>'hidden_saldo_vigente'.$count_partidas, 'name'=>'partidas['.$count_partidas.']saldo_vigente', 'value'=>''));
+echo input(array('type'=>'hidden', 'id'=>'hidden_id_partida'.$count_partidas, 'name'=>'partidas['.$count_partidas.'][odet_partida_id]', 'value'=>$id_partida));
+echo input(array('type'=>'hidden', 'id'=>'hidden_beneficiario_id'.$count_partidas, 'name'=>'partidas['.$count_partidas.'][odet_beneficiario_id]', 'value'=>''));
+echo input(array('type'=>'hidden', 'id'=>'hidden_empleado_id'.$count_partidas, 'name'=>'partidas['.$count_partidas.'][odet_empleado_id]', 'value'=>''));
+echo input(array('type'=>'hidden', 'id'=>'hidden_programa_id', 'name'=>'partidas['.$count_partidas.'][odet_programa_id]', 'value'=>$programa_id));
+echo input(array('type'=>'hidden', 'id'=>'hidden_asignacion'.$count_partidas, 'name'=>'partidas['.$count_partidas.'][odet_asignacion]', 'value'=>$presupuesto_inicial));
+echo input(array('type'=>'hidden', 'id'=>'hidden_gasto_acumulado'.$count_partidas, 'name'=>'partidas['.$count_partidas.'][odet_gasto_acumulado]', 'value'=>''));
+echo input(array('type'=>'hidden', 'id'=>'hidden_saldo_vigente'.$count_partidas, 'name'=>'partidas['.$count_partidas.'][odet_saldo_vigente]', 'value'=>''));
 
 
 echo tagcontent('td', $cod_partida);
 echo tagcontent('td', $input_beneficiario_search);
 echo tagcontent('td', '', array('id'=>'td_beneficiario_nombre'.$count_partidas, 'required'=>''));
-echo tagcontent('td', input(array('id'=>'input_concepto', 'name'=>'partidas['.$count_partidas.']concepto')));
-echo tagcontent('td', input(array('id'=>'input_ncomprobante', 'name'=>'partidas['.$count_partidas.']ncomprobante')));
-echo tagcontent('td', input(array('id'=>'input_valor', 'class'=>'inputs_valor', 'name'=>'partidas['.$count_partidas.']valor', 'id_partida'=>$id_partida, 'count_partidas'=>$count_partidas)));
+echo tagcontent('td', input(array('id'=>'input_concepto', 'name'=>'partidas['.$count_partidas.'][odet_concepto]')));
+echo tagcontent('td', input(array('id'=>'input_ncomprobante', 'name'=>'partidas['.$count_partidas.'][odet_comprobante_num]')));
+echo tagcontent('td', input(array('id'=>'input_valor', 'class'=>'inputs_valor', 'name'=>'partidas['.$count_partidas.'][odet_gasto]', 'id_partida'=>$id_partida, 'count_partidas'=>$count_partidas, 'value'=>'0')));
 echo tagcontent('td', $presupuesto_inicial, array('id'=>'td_asignacion_codificada'.$count_partidas, 'class'=>'tds_asignacionCodificada'));
 echo tagcontent('td', '', array('id'=>'td_gasto_acumulado'.$count_partidas, 'class'=>'tds_gastoAcumulado'));
 echo tagcontent('td', '', array('id'=>'td_saldo_vigente'.$count_partidas, 'class'=>'tds_saldoVigente'));
@@ -45,8 +51,14 @@ echo Close('tr');
     var load_beneficiario = function (datum) {
 //        console.log(count_partidas);
         $('#td_beneficiario_nombre'+count_partidas).text(datum.value);
-        $('#hidden_beneficiario_id'+count_partidas).val(datum.id_doc);//id_doc esta definido en el autosuggest como id
         $('#beneficiario_ruc'+count_partidas).val(datum.ci);
+        tipo_beneficiario = $('#hidden_tipo_beneficiario'+count_partidas).val();
+        if(tipo_beneficiario == 'E'){
+            $('#hidden_empleado_id'+count_partidas).val(datum.id_doc);//id_doc esta definido en el autosuggest como id
+        }
+        if(tipo_beneficiario == 'B'){
+            $('#hidden_beneficiario_id'+count_partidas).val(datum.id_doc);//id_doc esta definido en el autosuggest como id
+        }
     };
     $.autosugest_search('.input_beneficiario');
     
@@ -105,9 +117,11 @@ echo Close('tr');
 
         totalValorMasIva = totalValor+(totalValor * iva)/100;
         
-        //Enviamos los totales
+        //Enviamos los totales a los tds y a los hiddens
         $('#td_totalGastoOg').text(totalValor);
+        $('#input_gasto_og').val(totalValor);
         $('#td_totalValor').text(totalValorMasIva);
+        $('#input_total').val(totalValorMasIva);
         $('#td_totalAsignacion').text(totalAsignacionCodificada);
         $('#td_totalAcumulado').text(totalGastoAcumulado);
         $('#td_totalsaldoVigente').text(totalSaldoVigente);

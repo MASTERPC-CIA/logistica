@@ -7,6 +7,7 @@ echo Open('form', array('id' => 'form_examen', 'action' => base_url('logistica/o
 $res['areas_list'] = $areas_list;
 /*HEADER*/
 $this->load->view('orden_gasto/header', $res);
+echo Open('div', array('id'=>'ordengasto_view'));
 //echo lineBreak2(2, array('class'=>'clear'));
 //echo Open('div', array('id'=>'content_detalle_orden'));
 echo Open('div', array('id'=>'content_detalle_orden', 'style'=>'display:none;'));
@@ -14,7 +15,7 @@ echo Open('div', array('id'=>'content_detalle_orden', 'style'=>'display:none;'))
     //Panel header
         echo Open('div', array('class' => 'panel panel-heading form-inline'));
             echo tagcontent('div', '<h4>Detalle de Orden de Gasto</h4>', array('class'=>'col-md-10'));
-            echo tagcontent('button', '<span class=""></span>GUARDAR', array('id' => 'ajaxformbtn', 'class' => 'btn btn-success', 'data-target' => 'solicitud_out'));
+            echo tagcontent('button', '<span class=""></span>GUARDAR', array('id' => 'ajaxformbtn', 'class' => 'btn btn-success', 'data-target' => 'msj_out'));
         echo Close('div');
         //Panel content
             echo Open('div', array('class' => 'panel panel-body', 'id' => 'form_content'));
@@ -47,4 +48,8 @@ echo combobox($empleados, array('label' => 'nombres', 'value' => 'id'),
         true);
 echo Close('div');
 echo Close('div');
+echo Close('div');//Cierra ordengasto_view
 echo Close('form');
+
+//DIV para mensajes
+echo tagcontent('div', '', array('id'=>'msj_out'));

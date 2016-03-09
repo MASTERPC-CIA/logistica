@@ -3,6 +3,8 @@ $input_partida = input(array('type' => 'text', 'id' => 'partida_id', 'name' => '
     'placeholder' => 'CODIGO PRESUPUESTARIO', 'callback' => 'load_partida', 'class' => 'has-success',
     'data-url' => base_url('common/autosuggest/get_partidas_by_name/%QUERY')));
 $input_iva = input(array('type'=>'text', 'id'=>'input_iva', 'name'=>'input_iva', 'value'=>'0'));
+echo input(array('type'=>'hidden', 'id'=>'input_gasto_og', 'name'=>'input_gasto_og', 'value'=>''));
+echo input(array('type'=>'hidden', 'id'=>'input_total', 'name'=>'input_total', 'value'=>''));
 ?>
 
 <table class="table table-bordered">
@@ -31,7 +33,7 @@ $input_iva = input(array('type'=>'text', 'id'=>'input_iva', 'name'=>'input_iva',
         <!--TOTALES-->
         <tr>
             <td colspan="4"></td>
-             <th>Gasto de O.G.</th>
+            <th>Gasto de O.G.</th>
             <td id="td_totalGastoOg"></td>
             <td></td>
             <td></td>
