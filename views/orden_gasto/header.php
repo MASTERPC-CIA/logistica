@@ -8,12 +8,14 @@ echo Open('div');
     
         echo Open('tr');
             echo tagcontent('td ROWSPAN=2  align="center"', 'FECHA',array('style'=>'font-weight:900'));
-            echo tagcontent('td ROWSPAN=2', input(array('name' => "fecha_toma", 'value' => date('Y-m-d', time()), 'id' => "fecha_toma", 'type' => "text", 'class' => "form-control input-sm datepicker")));
+            echo tagcontent('td ROWSPAN=2', input(array('name' => "ord_fecha", 'value' => date('Y-m-d', time()), 'id' => "fecha_toma", 'type' => "text", 'class' => "form-control input-sm datepicker")));
             echo tagcontent('td ROWSPAN=2  align="center"', 'REFERENCIA',array('style'=>'font-weight:900'));
-            echo tagcontent('td ROWSPAN=2', input(array('id'=>'input_referencia', 'type'=>'text', 'value'=>'')));
+            echo tagcontent('td ROWSPAN=2', input(array('id'=>'ord_referencia','name'=>'ord_referencia', 'type'=>'text', 'value'=>'')));
             echo tagcontent('td', 'ORDEN DE GASTO N.',array('style'=>'font-weight:900'));
-            echo tagcontent('td', $secuencia=0);
+            echo tagcontent('td', input(array('name' => 'ord_numero', 'id' => 'ord_numero', 'readonly'=>'',
+                'class' => 'form-control input-sm', 'style' => 'width:100%', 'value'=>$secuencia)));
         echo Close('tr');
+            echo input(array('type'=>'hidden', 'name'=>'ord_nombre_unidad', 'value'=>get_settings("UNIDAD_OPERATIVA")));
             echo tagcontent('td', 'NOMBRE DE LA UNID.:',array('style'=>'font-weight:900'));
             echo tagcontent('td', get_settings("UNIDAD_OPERATIVA"));
         
@@ -62,14 +64,17 @@ echo Close('div');
         false);
 //echo get_combo_group('Area Funcional', $combo_areas, 'col-md-4 form-group');
 echo Open('div');
-    echo Open('table', array('id'=>'bloque2_ordengasto', 'class'=>'table table-condensed'));
+    echo Open('table', array('id'=>'bloque2_ordengasto', 'class'=>'table table-striped'));
         echo Open('tr');
 //            echo tagcontent('td', 'AREA FUNCIONAL',array('style'=>'font-weight:900'));
             echo tagcontent('td', get_combo_group('AREA FUNCIONAL', $combo_areas, 'col-md-12 form-group'));
             echo tagcontent('td', 'UNIDAD',array('style'=>'font-weight:900'));
             echo tagcontent('td', get_settings("COD_UNIDAD"));
+            echo input(array('type'=>'hidden', 'name'=>'ord_cod_unidad', 'value'=>get_settings("COD_UNIDAD")));
             echo tagcontent('td', 'UNIDAD EJECUTORA',array('style'=>'font-weight:900'));
             echo tagcontent('td', get_settings("UNIDAD_EJECUTORA"));
+            echo input(array('type'=>'hidden', 'name'=>'ord_unidad_ejecutora', 'value'=>get_settings("UNIDAD_EJECUTORA")));
+            
         echo Close('tr');
         echo Open('tr');
             echo tagcontent('td', get_combo_group('PROGRAMA', $combo_programas, 'col-md-12 form-group'));

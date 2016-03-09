@@ -7,32 +7,32 @@ echo Open('tr');
 //El Alistamiento operacional de las Fuerzas Armadas(id 17) el beneficiario se extrae de la tabla beneficiario_partidas
 switch ($programa_id) {
     case 2://Programa Administracion general
-        $input_beneficiario_search = input(array('type' => 'text', 'id' => 'beneficiario_ruc', 'name' => 'beneficiario_ruc',
-            'placeholder' => 'Nombre Beneficiario', 'callback' => 'load_beneficiario',
+        $input_beneficiario_search = input(array('type' => 'text', 'id' => 'beneficiario_ruc'.$count_partidas, 'name' => 'beneficiario_ruc',
+            'placeholder' => 'Nombre Beneficiario', 'callback' => 'load_beneficiario', 'class'=>'input_beneficiario',
             'data-url' => base_url('common/autosuggest/get_empleado_by_name/%QUERY')));
         break;
     
     case 17://Programa Alistamiento operacional de las Fuerzas Armadas(57)
-        $input_beneficiario_search = input(array('type' => 'text', 'id' => 'beneficiario_ruc', 'name' => 'beneficiario_ruc',
-            'placeholder' => 'Nombre Beneficiario', 'callback' => 'load_beneficiario',
+        $input_beneficiario_search = input(array('type' => 'text', 'id' => 'beneficiario_ruc'.$count_partidas, 'name' => 'beneficiario_ruc',
+            'placeholder' => 'Nombre Beneficiario', 'callback' => 'load_beneficiario', 'class'=>'input_beneficiario',
             'data-url' => base_url('common/autosuggest/get_beneficiario_by_name/%QUERY')));
         break;
 }
 /*Hiddens a enviar*/
-//echo input(array('type'=>'hidden', 'id'=>'hidden_id_partida', 'name'=>'id_partida', 'value'=>$id_partida));
-echo input(array('type'=>'hidden', 'id'=>'hidden_beneficiario_id', 'name'=>'partidas['.$id_partida.']beneficiario_id', 'value'=>''));
-echo input(array('type'=>'hidden', 'id'=>'hidden_programa_id', 'name'=>'partidas['.$id_partida.']programa_id', 'value'=>$programa_id));
-echo input(array('type'=>'hidden', 'id'=>'hidden_asignacion'.$count_partidas, 'name'=>'partidas['.$id_partida.']asignacion', 'value'=>$presupuesto_inicial));
-echo input(array('type'=>'hidden', 'id'=>'hidden_gasto_acumulado'.$count_partidas, 'name'=>'partidas['.$id_partida.']gasto_acumulado', 'value'=>''));
-echo input(array('type'=>'hidden', 'id'=>'hidden_saldo_vigente'.$count_partidas, 'name'=>'partidas['.$id_partida.']saldo_vigente', 'value'=>''));
+echo input(array('type'=>'hidden', 'id'=>'hidden_id_partida'.$count_partidas, 'name'=>'partidas['.$count_partidas.']id_partida', 'value'=>$id_partida));
+echo input(array('type'=>'hidden', 'id'=>'hidden_beneficiario_id'.$count_partidas, 'name'=>'partidas['.$count_partidas.']beneficiario_id', 'value'=>''));
+echo input(array('type'=>'hidden', 'id'=>'hidden_programa_id', 'name'=>'partidas['.$count_partidas.']programa_id', 'value'=>$programa_id));
+echo input(array('type'=>'hidden', 'id'=>'hidden_asignacion'.$count_partidas, 'name'=>'partidas['.$count_partidas.']asignacion', 'value'=>$presupuesto_inicial));
+echo input(array('type'=>'hidden', 'id'=>'hidden_gasto_acumulado'.$count_partidas, 'name'=>'partidas['.$count_partidas.']gasto_acumulado', 'value'=>''));
+echo input(array('type'=>'hidden', 'id'=>'hidden_saldo_vigente'.$count_partidas, 'name'=>'partidas['.$count_partidas.']saldo_vigente', 'value'=>''));
 
 
 echo tagcontent('td', $cod_partida);
 echo tagcontent('td', $input_beneficiario_search);
-echo tagcontent('td', '', array('id'=>'td_beneficiario_nombre', 'required'=>''));
-echo tagcontent('td', input(array('id'=>'input_concepto', 'name'=>'partidas['.$id_partida.']concepto')));
-echo tagcontent('td', input(array('id'=>'input_ncomprobante', 'name'=>'partidas['.$id_partida.']ncomprobante')));
-echo tagcontent('td', input(array('id'=>'input_valor', 'class'=>'inputs_valor', 'name'=>'partidas['.$id_partida.']valor', 'id_partida'=>$id_partida, 'count_partidas'=>$count_partidas)));
+echo tagcontent('td', '', array('id'=>'td_beneficiario_nombre'.$count_partidas, 'required'=>''));
+echo tagcontent('td', input(array('id'=>'input_concepto', 'name'=>'partidas['.$count_partidas.']concepto')));
+echo tagcontent('td', input(array('id'=>'input_ncomprobante', 'name'=>'partidas['.$count_partidas.']ncomprobante')));
+echo tagcontent('td', input(array('id'=>'input_valor', 'class'=>'inputs_valor', 'name'=>'partidas['.$count_partidas.']valor', 'id_partida'=>$id_partida, 'count_partidas'=>$count_partidas)));
 echo tagcontent('td', $presupuesto_inicial, array('id'=>'td_asignacion_codificada'.$count_partidas, 'class'=>'tds_asignacionCodificada'));
 echo tagcontent('td', '', array('id'=>'td_gasto_acumulado'.$count_partidas, 'class'=>'tds_gastoAcumulado'));
 echo tagcontent('td', '', array('id'=>'td_saldo_vigente'.$count_partidas, 'class'=>'tds_saldoVigente'));
@@ -43,17 +43,20 @@ echo Close('tr');
 <script>
     /*Enviamos los datos extraidos por el autosuggest a sus inputs correspondientes*/
     var load_beneficiario = function (datum) {
-        $('#td_beneficiario_nombre').text(datum.value);
-        $('#hidden_beneficiario_id').val(datum.id_doc);//id_doc esta definido en el autosuggest como id
-        $('#beneficiario_ruc').val(datum.ci);
+//        console.log(count_partidas);
+        $('#td_beneficiario_nombre'+count_partidas).text(datum.value);
+        $('#hidden_beneficiario_id'+count_partidas).val(datum.id_doc);//id_doc esta definido en el autosuggest como id
+        $('#beneficiario_ruc'+count_partidas).val(datum.ci);
     };
-    $.autosugest_search('#beneficiario_ruc');
+    $.autosugest_search('.input_beneficiario');
     
     //Calculamos los totales de cada fila luego de ingresar el valor
     $('.inputs_valor').keyup(function(){
         //OJO. Cada td y hidden tienen un id que concatena el id_partida al final
 //        id_partida = $(this).attr('id_partida');
         count_partidas = $(this).attr('count_partidas');
+        //Envio a la variable global
+        count_partidas_global = count_partidas;
         valor = $(this).val();
         
         //enviamos el mismo valor a gasto acumulad
@@ -71,28 +74,40 @@ echo Close('tr');
         calcularTotales();
     });
     
+    //Calculamos si se cambia el valor del iva
+    $('#input_iva').keyup(function(){
+        iva = parseFloat($(this).val());
+        totalValor = parseFloat($('#td_totalGastoOg').text());
+        totalValorMasIva = totalValor+(totalValor * iva)/100;
+        $('#td_totalValor').text(totalValorMasIva);
+    });
+    
     function calcularTotales(){
         totalValor = 0;
         totalAsignacionCodificada = 0;
         totalGastoAcumulado = 0;
         totalSaldoVigente = 0;
+        iva = parseFloat($('#input_iva').val());
         $(".inputs_valor").each(function() {
             totalValor += parseFloat($(this).val());
             //El valor es el mismo de gastoAcumulado
-            totalGastoAcumulado += totalValor;
+//            totalGastoAcumulado += totalValor;
         });
         $(".tds_asignacionCodificada").each(function() {
             totalAsignacionCodificada += parseFloat($(this).text());
         });
-//        $(".tds_gastoAcumulado").each(function() {
-//            totalGastoAcumulado += $(this).text();
-//        });
+        $(".tds_gastoAcumulado").each(function() {
+            totalGastoAcumulado += parseFloat($(this).text());
+        });
         $(".tds_saldoVigente").each(function() {
             totalSaldoVigente += parseFloat($(this).text());
         });
+
+        totalValorMasIva = totalValor+(totalValor * iva)/100;
         
         //Enviamos los totales
-        $('#td_totalValor').text(totalValor);
+        $('#td_totalGastoOg').text(totalValor);
+        $('#td_totalValor').text(totalValorMasIva);
         $('#td_totalAsignacion').text(totalAsignacionCodificada);
         $('#td_totalAcumulado').text(totalGastoAcumulado);
         $('#td_totalsaldoVigente').text(totalSaldoVigente);

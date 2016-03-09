@@ -2,11 +2,10 @@
 $input_partida = input(array('type' => 'text', 'id' => 'partida_id', 'name' => 'partida_id',
     'placeholder' => 'CODIGO PRESUPUESTARIO', 'callback' => 'load_partida', 'class' => 'has-success',
     'data-url' => base_url('common/autosuggest/get_partidas_by_name/%QUERY')));
-$input_iva = input(array('type'=>'text', 'id'=>'input_iva', 'name'=>'input_iva'));
-echo input(array('type'=>'hidden', 'id'=>'count_partidas', 'value'=>0));
+$input_iva = input(array('type'=>'text', 'id'=>'input_iva', 'name'=>'input_iva', 'value'=>'0'));
 ?>
 
-<table class="table table-striped">
+<table class="table table-bordered">
     <thead>
         <tr>
             <th rowspan="2"><?php echo $input_partida ?></th>
@@ -40,8 +39,8 @@ echo input(array('type'=>'hidden', 'id'=>'count_partidas', 'value'=>0));
         </tr>
         <tr>
             <td colspan="4"></td>
-             <th>IVA</th>
-            <td id=""<?phpecho $input_iva?></td>
+            <th>IVA</th>
+            <td id=""><?php echo $input_iva ?></td>
             <td></td>
             <td></td>
             <td></td>
@@ -62,23 +61,32 @@ echo input(array('type'=>'hidden', 'id'=>'count_partidas', 'value'=>0));
 
 <script>
     var count_partidas = 0;
-    /*Enviamos los datos extraidos por el autosuggest a sus inputs correspondientes*/
+    /*Cargamos los datos de la partida digitada*/
     var load_partida = function (datum) {
+//        console.log(datum);
         id_partida = datum.id;
         cod_partida = datum.ci;
         programa_id = $('#combo_programas').val();
-        $.ajax({
-            type: "POST",
-            url: "ordengasto/loadDetalleView",
-            dataType: 'html',
-            data: {id_partida: id_partida, cod_partida: cod_partida, programa_id: programa_id, count_partidas: count_partidas+1},
-            success: function (row) {
-                $('#partida_detalle').append(row);
-                $('#partida_id').text('');
-                count_partidas++;
-                console.log('Contador: '+count_partidas);
-            }
-        });
+        subtarea_id = $('#combo_subtareas').val();
+        //Validamos que haya seleccionado los combobox para que script no de error
+        if(programa_id == null){
+            alertaError('No ha seleccionado un programa');
+        }else if(subtarea_id != datum.parent){//Validamos que la partida pertenezca a la subtarea
+            alertaError('Esta partida no pertenece a la Subtarea seleccionada');
+        }else{
+            $.ajax({
+                type: "POST",
+                url: "ordengasto/loadDetalleView",
+                dataType: 'html',
+                data: {id_partida: id_partida, cod_partida: cod_partida, programa_id: programa_id, count_partidas: (parseInt(count_partidas)+1)},
+                success: function (row) {
+                    $('#partida_detalle').append(row);
+                    $('#partida_id').text('');
+                    count_partidas++;
+//                    console.log('Contador: '+count_partidas);
+                }
+            });
+        }
     };
     $.autosugest_search('#partida_id');
 </script>
