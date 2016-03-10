@@ -11,49 +11,47 @@ $caja_texto = '<input type="text" id="search" placeholder="Ingrese valor a busca
               echo Open('table', array('id'=>'table','class' => "table table-fixed-header"));
              echo '<thead>';
                     $thead = array(
-                               'Codigo',
-                               'Nombre',
-                               'Area',
-                               'Tipo',
-                               'P. Inicial',
-                               'P. Vigente',
-//                               'Acciones',
+                               'NUMERO',
+                               'VALOR',
+                               'REALIZADO POR',
+                               'APROBADO POR',
+                               'FECHA',
+                               'HORA',
+                               'ACCIONES',
                            );
                     echo tablethead($thead);
                 echo '</thead>';
                 echo '<tbody>';
                     if(!empty($data)):
                         $data = json_decode($data);
-                        $sumatoria_inicial = 0;
-                        $sumatoria_vigente = 0;
+                        $sumatoria_total = 0;
                         foreach ($data as $val) {
                             echo Open('tr');
-                               echo tagcontent('td', $val->cod);
-                                echo tagcontent('td', $val->nombre);
-                                echo tagcontent('td', $val->area);
-                                echo tagcontent('td', $val->tipo);
-                                echo tagcontent('td', $val->presupuesto_inicial);
-                                echo tagcontent('td', $val->presupuesto_vigente);
+                               echo tagcontent('td', $val->numero);
+                                echo tagcontent('td', '$ '. $val->total);
+                                echo tagcontent('td', $val->realizado_por);
+                                echo tagcontent('td', $val->aprobado_por);
+                                echo tagcontent('td', $val->fecha);
+                                echo tagcontent('td', $val->hora);
                                 echo '<td>';
                                 ?>
-<!--                                <button type="button"  title = "Imprimir InterConsulta " data-target="opcion_elegida" class="btn btn-default fa fa-print" id="ajaxpanelbtn" data-url="<?php echo base_url('emergencia/interconsultas/get_list_interconsulta_id/'.$val->id)?>"></button>
+                                <button type="button"  title = "Imprimir InterConsulta " data-target="opcion_elegida" class="btn btn-default fa fa-print" id="ajaxpanelbtn" data-url="<?php echo base_url('emergencia/interconsultas/get_list_interconsulta_id/'.$val->id)?>"></button>
                                 <button type="button"  title = "Editar InterConsulta" data-target="opcion_elegida" class="btn btn-warning fa fa-edit" id="ajaxpanelbtn" data-url="<?php echo base_url('emergencia/interconsultas/modificacion_interconsu_id/'.$val->id)?>"></button>
-                                <button type="button"  title = "Anular InterConsulta" data-target="opcion_elegida" class="btn btn-danger fa fa-trash-o" id="ajaxpanelbtn" data-url="<?php echo base_url('emergencia/interconsultas/anular_interconsulta_view_id/'.$val->id)?>"></button>-->
+                                <button type="button"  title = "Anular InterConsulta" data-target="opcion_elegida" class="btn btn-danger fa fa-trash-o" id="ajaxpanelbtn" data-url="<?php echo base_url('emergencia/interconsultas/anular_interconsulta_view_id/'.$val->id)?>"></button>
                                 <?php
                                 echo '</td>';
-                                $sumatoria_inicial += $val->presupuesto_inicial;
-                                $sumatoria_vigente += $val->presupuesto_vigente;
+                                $sumatoria_total += $val->total;
                             echo Close('tr');
                         }
                         /*SUMATORIAS*/
                         echo Open('tfoot');
                         echo Open('tr');
                                echo tagcontent('td');
-                                echo tagcontent('th', 'TOTAL');
+                                echo tagcontent('th', $sumatoria_total);
                                 echo tagcontent('td');
                                 echo tagcontent('td');
-                                echo tagcontent('th', $sumatoria_inicial);
-                                echo tagcontent('th', $sumatoria_vigente);
+                                echo tagcontent('td');
+                                echo tagcontent('td');
                         echo Close('tr');
                         echo Close('tfoot');
                     endif;

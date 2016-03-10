@@ -10,7 +10,7 @@
         <ul class="sidebar-menu">
             <li class="header">LOG&Iacute;STICA</li>
             <li> <a href="<?= base_url('logistica/ordengasto') ?>"><i class="glyphicon glyphicon-plus"></i> Nueva Orden Gasto</a> </li>
-            <li> <a class="active" href="<?= base_url('logistica/ordengasto/#') ?>"><i class="glyphicon glyphicon-list"></i> Reporte de Gastos</a> </li>
+            <li> <a class="active" href="<?= base_url('logistica/ordengasto/reporteView') ?>"><i class="glyphicon glyphicon-list"></i> Reporte de Gastos</a> </li>
             <li> <a href="<?= base_url('logistica/transferencia/#') ?>"><i class="glyphicon glyphicon-plus"></i> Transferencia</a> </li>
             <li> <a class="active" href="<?= base_url('logistica/transferencia/#') ?>"><i class="glyphicon glyphicon-list"></i> Reporte de Transferencias</a> </li>
             <li> <a class="" href="<?= base_url('logistica/presupuesto/index') ?>"><i class="glyphicon glyphicon-usd"></i> Presupuesto</a> </li>

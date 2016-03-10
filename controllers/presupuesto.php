@@ -11,16 +11,12 @@ class Presupuesto extends MX_Controller {
     public function __construct() {
         parent::__construct();
         $this->user->check_session();
+        $this->load->library('presupuesto_library');
     }
 
     public function index() {
-        $data_search['areas_list'] = $this->generic_model->get('plan_proyectos_area');
-        $data_search['tipos_list'] = $this->generic_model->get('plan_proyectos_tipo');
-        $res['view'] = $this->load->view('presupuesto_view', $data_search, TRUE);
-//        $res['view'] = $this->load->view('common/crud/crud_view_datatable', $crud);
-        $res['slidebar'] = $this->load->view('slidebar', '', TRUE);
-        $res['title'] = 'Presupuesto-Logistica';
-        $this->load->view('common/templates/dashboard_lte', $res);
+        $this->presupuesto_library->reporteView();
+       
     }
 
     /* Filtra segun los parametros de busqueda para generar el listado */

@@ -16,7 +16,7 @@ class Index extends MX_Controller {
         //Tipo 1: Area funcional
         $this->load->library('ordengasto_library');
 
-        $this->ordengasto_library->load_view();
+        $this->ordengasto_library->newGastoView();
     }
 
 }
