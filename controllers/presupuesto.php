@@ -3,46 +3,55 @@
 /**
  * Description of index
  *
- * @author JOSE LUIS
+ * @author JOSE LUIS Q
+ * Desarrollado a inicios del mes de marzo/2016
  */
 class Presupuesto extends MX_Controller {
 
     public function __construct() {
         parent::__construct();
         $this->user->check_session();
-     }
+    }
 
     public function index() {
-        $res['view'] = $this->load->view('presupuesto_view', '', TRUE);
+        $data_search['areas_list'] = $this->generic_model->get('plan_proyectos_area');
+        $data_search['tipos_list'] = $this->generic_model->get('plan_proyectos_tipo');
+        $res['view'] = $this->load->view('presupuesto_view', $data_search, TRUE);
+//        $res['view'] = $this->load->view('common/crud/crud_view_datatable', $crud);
         $res['slidebar'] = $this->load->view('slidebar', '', TRUE);
         $res['title'] = 'Presupuesto-Logistica';
         $this->load->view('common/templates/dashboard_lte', $res);
     }
-    
-    public function get_crud() {
-        $this->config->load('grocery_crud');
-        $this->config->set_item('grocery_crud_dialog_forms', true);
-//		$this->config->set_item('grocery_crud_default_per_page',10);            
-        $crud = new grocery_CRUD();
-        $crud->set_theme('flexigrid');
-//$crud->set_theme('twitter-bootstrap');
-        $crud->set_table('plan_proyectos');
-        $crud->columns('id', 'cod', 'nombre', 'area_cod', 'tipo_id', 'parent', 'presupuesto_inicial', 'presupuesto_vigente');
-        $crud->display_as('area_cod', 'Area');
-        $crud->display_as('parent', 'Padre');
-        $crud->display_as('tipo_id', 'Tipo');
-        $crud->set_relation('area_cod', 'plan_proyectos_area', 'nombre');
-        $crud->set_relation('tipo_id', 'plan_proyectos_tipo', 'tipo');
-        $crud->set_relation('parent', 'plan_proyectos', '{nombre} {cod}');
-        $crud->unset_columns('id');
-        $crud->set_subject('Cuentas');
-        $crud->add_fields('cod', 'nombre', 'area_cod', 'tipo_id', 'parent', 'presupuesto_inicial', 'presupuesto_vigente', 'visible');
-        $crud->edit_fields('cod', 'nombre', 'area_cod', 'tipo_id', 'parent', 'presupuesto_inicial', 'presupuesto_vigente', 'visible');
 
-        $output = $crud->render();
+    /* Filtra segun los parametros de busqueda para generar el listado */
+    function search() {
+        $area = $this->input->post('select_area');
+        $tipo = $this->input->post('select_tipo');
 
-//        $this->load->view('common/crud/crud_view_datatable', $output);
-        $this->load->view('common/crud/crud_view_flexgrid', $output);
+        $where = array();
+        $join_clause = array();
+        
+        //Enviamos los valores en vacio si son -1
+        /*Programacion Funcional de un IF. (condicion ? true : false)*/
+        $area = ($area == -1 ? '' : $area);
+        $tipo = ($tipo == -1 ? '' : $tipo);
+
+        if (!empty($area)): $where['area_cod'] = $area;
+        endif;
+        if (!empty($tipo)): $where['tipo_id'] = $tipo;
+        endif;
+        
+        $join_clause[] = array('table' => 'plan_proyectos_area area', 'condition' => 'area_cod = area.cod');
+        $join_clause[] = array('table' => 'plan_proyectos_tipo tipo', 'condition' => 'tipo_id = tipo.id');
+        
+        $json_res = $this->generic_model->get_join('plan_proyectos plan', $where, $join_clause, 'plan.cod, plan.nombre, '
+                . 'presupuesto_inicial, presupuesto_vigente, area.nombre area, tipo.tipo', '');
+        $resultado = count($json_res);
+        $res['data'] = $json_res;
+        $res['num_reg'] = $resultado;
+        $res['subject'] = 'PARTIDAS';
+        json_encode($json_res);
+        $this->load->view('presupuesto/result_list', $res);
     }
 
 }
