@@ -23,6 +23,7 @@ $caja_texto = '<input type="text" id="search" placeholder="Ingrese valor a busca
                 echo '</thead>';
                 echo '<tbody>';
                     if(!empty($data)):
+                        $data = json_decode($data);
                         $sumatoria_inicial = 0;
                         $sumatoria_vigente = 0;
                         foreach ($data as $val) {
