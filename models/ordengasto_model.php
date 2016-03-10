@@ -10,12 +10,12 @@ class Ordengasto_model extends CI_Model {
         $this->db->select('ord_numero');
         $this->db->from('orden_gasto');
         $this->db->where('ord_estado !=', '-1');
-        $this->db->order_by('ord_estado', 'DESC');
+        $this->db->order_by('ord_numero', 'DESC');
 
         $this->db->limit(1);
         $query = $this->db->get();
-        if (!empty($query->row()->ord_estado)) {
-            return $query->row()->ord_estado;
+        if (!empty($query->row()->ord_numero)) {
+            return $query->row()->ord_numero;
         } else {
             return;
         }
