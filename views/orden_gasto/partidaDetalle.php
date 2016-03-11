@@ -1,7 +1,7 @@
 <?php
 /*Armamos la fila de la partida*/
 //echo Open('table');
-echo Open('tr');
+echo Open('tr', array('id'=>'tr'.$count_partidas));
 //Cambiamos el input para beneficiario.
 //El programa Administracion general (id 2) el beneficiario son los empleados
 //El Alistamiento operacional de las Fuerzas Armadas(id 17) el beneficiario se extrae de la tabla beneficiario_partidas
@@ -23,6 +23,7 @@ switch ($programa_id) {
 
         break;
 }
+$btn_remove = tagcontent('button', 'X', array('class'=>'btn btn-danger btn-xs','id'=>'ajaxformbtn','data-target'=>''));
 /*Hiddens a enviar*/
 echo input(array('type'=>'hidden', 'id'=>'hidden_id_partida'.$count_partidas, 'name'=>'partidas['.$count_partidas.'][odet_partida_id]', 'value'=>$id_partida));
 echo input(array('type'=>'hidden', 'id'=>'hidden_beneficiario_id'.$count_partidas, 'name'=>'partidas['.$count_partidas.'][odet_beneficiario_id]', 'value'=>''));
@@ -33,6 +34,7 @@ echo input(array('type'=>'hidden', 'id'=>'hidden_gasto_acumulado'.$count_partida
 echo input(array('type'=>'hidden', 'id'=>'hidden_saldo_vigente'.$count_partidas, 'name'=>'partidas['.$count_partidas.'][odet_saldo_vigente]', 'value'=>''));
 
 
+echo tagcontent('td', $btn_remove);
 echo tagcontent('td', $cod_partida);
 echo tagcontent('td', $input_beneficiario_search);
 echo tagcontent('td', '', array('id'=>'td_beneficiario_nombre'.$count_partidas, 'required'=>''));
@@ -47,6 +49,7 @@ echo Close('tr');
 //echo Close('table');
 ?>
 <script>
+    /*Tomamos el count del input autosuggest que este visualizando*/
     $('[name="beneficiario_ruc"]').on('focus','',function(){
 //         alert('sadsa');
          count_partidas = $(this).attr('count');
@@ -135,4 +138,10 @@ echo Close('tr');
         $('#td_totalAcumulado').text(totalGastoAcumulado);
         $('#td_totalsaldoVigente').text(totalSaldoVigente);
     }
+    
+    /*Boton remover. Elimina un tr*/
+    $('.btn-xs').click(function(event){
+        event.preventDefault;
+        $('#tr'+count_partidas).remove();
+    });
 </script>

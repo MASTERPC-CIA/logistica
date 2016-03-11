@@ -10,6 +10,7 @@ echo input(array('type'=>'hidden', 'id'=>'input_total', 'name'=>'input_total', '
 <table class="table table-bordered">
     <thead>
         <tr>
+            <th rowspan="2"></th>
             <th rowspan="2"><?php echo $input_partida ?></th>
             <th rowspan="2">RUC O RUP</th>
             <th rowspan="2">BENEFICIARIO</th>
