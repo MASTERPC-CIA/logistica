@@ -8,7 +8,7 @@ echo Open('tr');
 switch ($programa_id) {
     case 2://Programa Administracion general
         $input_beneficiario_search = input(array('type' => 'text', 'id' => 'beneficiario_ruc'.$count_partidas, 'name' => 'beneficiario_ruc',
-            'placeholder' => 'Nombre Beneficiario', 'callback' => 'load_beneficiario', 'class'=>'input_beneficiario',
+            'placeholder' => 'Nombre Beneficiario', 'callback' => 'load_beneficiario', 'class'=>'input_beneficiario', 'count'=>$count_partidas,
             'data-url' => base_url('common/autosuggest/get_empleado_by_name/%QUERY')));
         //Hiden tipo empleado
         echo input(array('type'=>'hidden', 'id'=>'hidden_tipo_beneficiario'.$count_partidas, 'name'=>'partidas['.$count_partidas.'][odet_tipo_beneficiario]', 'value'=>'E'));
@@ -16,7 +16,7 @@ switch ($programa_id) {
     
     case 17://Programa Alistamiento operacional de las Fuerzas Armadas(57)
         $input_beneficiario_search = input(array('type' => 'text', 'id' => 'beneficiario_ruc'.$count_partidas, 'name' => 'beneficiario_ruc',
-            'placeholder' => 'Nombre Beneficiario', 'callback' => 'load_beneficiario', 'class'=>'input_beneficiario',
+            'placeholder' => 'Nombre Beneficiario', 'callback' => 'load_beneficiario', 'class'=>'input_beneficiario', 'count'=>$count_partidas,
             'data-url' => base_url('common/autosuggest/get_beneficiario_by_name/%QUERY')));
         //Hiden tipo beneficiario
         echo input(array('type'=>'hidden', 'id'=>'hidden_tipo_beneficiario'.$count_partidas, 'name'=>'partidas['.$count_partidas.'][odet_tipo_beneficiario]', 'value'=>'B'));
@@ -47,9 +47,19 @@ echo Close('tr');
 //echo Close('table');
 ?>
 <script>
+    $('[name="beneficiario_ruc"]').on('focus','',function(){
+//         alert('sadsa');
+         count_partidas = $(this).attr('count');
+     });
     /*Enviamos los datos extraidos por el autosuggest a sus inputs correspondientes*/
     var load_beneficiario = function (datum) {
 //        console.log(count_partidas);
+        setValues(datum);
+       
+    };
+    $.autosugest_search('.input_beneficiario');
+    
+    function setValues(datum){
         $('#td_beneficiario_nombre'+count_partidas).text(datum.value);
         $('#beneficiario_ruc'+count_partidas).val(datum.ci);
         tipo_beneficiario = $('#hidden_tipo_beneficiario'+count_partidas).val();
@@ -59,8 +69,7 @@ echo Close('tr');
         if(tipo_beneficiario == 'B'){
             $('#hidden_beneficiario_id'+count_partidas).val(datum.id_doc);//id_doc esta definido en el autosuggest como id
         }
-    };
-    $.autosugest_search('.input_beneficiario');
+    }
     
     //Calculamos los totales de cada fila luego de ingresar el valor
     $('.inputs_valor').keyup(function(){

@@ -79,7 +79,14 @@ class Ordengasto extends MX_Controller {
 
         $id_orden = $this->ordengasto_model->save(
                 $array_partidas, $ord_fecha, $ord_hora, $ord_numero, $ord_referencia, $ord_cod_unidad, $ord_nombre_unidad, $ord_unidad_ejecutora, $ord_proyecto, $ord_subproyecto, $ord_gasto_og, $ord_iva, $ord_total, $ord_user_id, $ord_user_revision, $ord_user_relator, $ord_user_aprobacion);
-
+        
+        if($id_orden == -1){#Si ha ocurrido un error en la transaccion
+            $this->db->trans_rollback();
+            $this->res_msj .= error_msg('<br>Orden de Gasto NO Guardada');
+            echo tagcontent('script', 'alertaError("Ha ocurrido un error")');
+            echo $this->res_msj;
+            die();
+        }
 //Verificación de transacción:
 // verifico que todo elproceso en si este bien ejecutado
         if ($this->db->trans_status() === FALSE) {
@@ -90,7 +97,7 @@ class Ordengasto extends MX_Controller {
             $this->res_msj .= success_msg('. Orden de Gasto registrada');
             echo $this->res_msj;
             $this->db->trans_commit();
-            echo tagcontent('script', '$("#ordengasto_view").hide(500);');
+            echo tagcontent('script', '$("#orden_out").hide(500);');
         }
     }
 

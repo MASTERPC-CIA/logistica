@@ -49,13 +49,13 @@ class Ordengasto_model extends CI_Model {
         //Guardamos en tabla orden_gasto
         $id_orden = $this->generic_model->save($data, 'orden_gasto');
         //retornamos -1 para hacer las validaciones en el controlador
-        if ($id_orden == '-1') {
+        if ($id_orden == -1) {
+            echo error_info_msg(' Error al guardar cabecera de la orden de gasto.');
             return $id_orden;
         }
         $id_detalle = $this->saveDetalle($array_partidas, $id_orden);
-        if ($id_detalle == '-1') {
-            echo error_msg('<br>Error al guardar cabecera de orden.');
-            return $id_detalle;
+        if ($id_detalle == -1) {
+            return -1;
         }
         return $id_orden;
     }
@@ -73,10 +73,48 @@ class Ordengasto_model extends CI_Model {
                 $array_detalle[$key] = $value;
             }
             $id_detalle = $this->generic_model->save($array_detalle, 'orden_gasto_detalle');
-            if ($id_detalle == '-1') {
-                echo error_msg('<br>Error al guardar detalle.');
-                return $id_detalle;
+            if ($id_detalle == -1) {
+                echo error_info_msg(' Error al guardar detalle.');
+                return -1;
             }
+            $updateSaldo = $this->updatePresupuesto($partida['odet_partida_id'], $partida['odet_gasto']);
+            //Si ocurrio no se actualizo el saldo por saldos insuficientes
+            if ($updateSaldo == -1) {
+                return -1;
+            }
+            $updateParent = $this->updateParents($partida['odet_partida_id'], $partida['odet_gasto']);
+            //Si ocurrio no se actualizo el saldo por saldos insuficientes
+            if ($updateParent == -1) {
+                return -1;
+            }
+        }
+    }
+
+    /* Actualiza el valor del presupuesto vigente de cada partida en el plan de proyectos */
+
+    function updatePresupuesto($partida_id, $valor) {
+        $presupuestoActual = $this->generic_model->get_val_where('plan_proyectos', array('id' => $partida_id), 'presupuesto_vigente');
+        $nuevoPresupuesto = $presupuestoActual - $valor;
+        
+       
+        if ($nuevoPresupuesto < 0) {
+            echo error_info_msg(' No hay suficiente presupuesto en la cuenta');
+            return -1;
+        }
+        $this->generic_model->update_by_id('plan_proyectos', array('presupuesto_vigente' => $nuevoPresupuesto), $partida_id);
+    }
+
+    /* Actualiza el presupuesto de los padres de la partida */
+
+    function updateParents($partida_id, $valor) {
+        $parent_data = $this->getParent($partida_id, 'id');
+        
+        while (!empty($parent_data)) {
+            $updateParent = $this->updatePresupuesto($parent_data->id, $valor);
+            if ($updateParent == -1) {
+                return -1;
+            }
+            $parent_data = $this->getParent($parent_data->id, 'id');
         }
     }
 
@@ -84,19 +122,19 @@ class Ordengasto_model extends CI_Model {
 
     function getData($orden_id) {
         $fields = 'orden_gasto.*,' //Necesitamos todos los datos
-                .'CONCAT_WS(" ", emp_realiz.nombres, emp_realiz.apellidos) realizado_por,'
-                .'CONCAT_WS(" ", emp_aprob.nombres, emp_aprob.apellidos) aprobado_por,'
-                .'CONCAT_WS(" ", emp_relat.nombres, emp_relat.apellidos) relator_pb,'
-                .'CONCAT_WS(" ", emp_revis.nombres, emp_revis.apellidos) revisado_por'
-                ;
+                . 'CONCAT_WS(" ", emp_realiz.nombres, emp_realiz.apellidos) realizado_por,'
+                . 'CONCAT_WS(" ", emp_aprob.nombres, emp_aprob.apellidos) aprobado_por,'
+                . 'CONCAT_WS(" ", emp_relat.nombres, emp_relat.apellidos) relator_pb,'
+                . 'CONCAT_WS(" ", emp_revis.nombres, emp_revis.apellidos) revisado_por'
+        ;
         $where = array('orden_gasto.id' => $orden_id);
         $join_clause = array();
-        
+
         $join_clause[] = array('table' => 'billing_empleado emp_realiz', 'condition' => 'ord_user_id = emp_realiz.id');
         $join_clause[] = array('table' => 'billing_empleado emp_aprob', 'condition' => 'ord_user_aprobacion = emp_aprob.id');
         $join_clause[] = array('table' => 'billing_empleado emp_revis', 'condition' => 'ord_user_revision = emp_revis.id');
         $join_clause[] = array('table' => 'billing_empleado emp_relat', 'condition' => 'ord_user_relator = emp_relat.id');
-        
+
         $orden_data = $this->generic_model->get_join('orden_gasto', $where, $join_clause, $fields, 1);
 
         return $orden_data;
@@ -111,23 +149,21 @@ class Ordengasto_model extends CI_Model {
                 . 'emp.PersonaComercio_cedulaRuc empleado_ruc,'
                 . 'ben_nombre beneficiario_nombres,'
                 . 'ben_ruc beneficiario_ruc,'
-                ;
+        ;
         $where = array('odet_orden_id' => $orden_id);
         $join = array();
-        
+
         $join[] = array('table' => 'plan_proyectos partida', 'condition' => 'odet_partida_id = partida.id');
-        $join[] = array('table' => 'billing_empleado emp', 'condition' => 'odet_empleado_id = emp.id', 'type'=>'left');
-        $join[] = array('table' => 'beneficiario_partidas ben', 'condition' => 'odet_beneficiario_id = ben.id', 'type'=>'left');
-        $partidasDetalle = $this->generic_model->get_join('orden_gasto_detalle', 
-                $where, $join, $fields);
+        $join[] = array('table' => 'billing_empleado emp', 'condition' => 'odet_empleado_id = emp.id', 'type' => 'left');
+        $join[] = array('table' => 'beneficiario_partidas ben', 'condition' => 'odet_beneficiario_id = ben.id', 'type' => 'left');
+        $partidasDetalle = $this->generic_model->get_join('orden_gasto_detalle', $where, $join, $fields);
 
         return $partidasDetalle;
     }
 
     /* Extrae el id, cod y nombre del padre de una cuenta del plan de proyectos */
 
-    function getParent($cta_id) {
-        $fields = 'id, cod, nombre, parent';
+    function getParent($cta_id, $fields = 'id, cod, nombre, parent') {
         $parent_id = $this->generic_model->get_val_where('plan_proyectos', array('id' => $cta_id), 'parent');
         $parent = $this->getCtaData($parent_id, $fields);
 

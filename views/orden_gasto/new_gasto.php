@@ -1,8 +1,8 @@
 <?php
-echo tagcontent('div', '', array('id' => 'orden_out'));
 date_default_timezone_set('America/Guayaquil');
 $this->load->view('common/hmc_head/encabezado_cuenca'); //Encabezado para el hospital militar
 
+echo Open('div', array('id' => 'orden_out'));
 echo Open('form', array('id' => 'form_examen', 'action' => base_url('logistica/ordengasto/save_new'), 'method' => 'post'));
 $res['areas_list'] = $areas_list;
 /*HEADER*/
@@ -48,8 +48,10 @@ echo combobox($empleados, array('label' => 'nombres', 'value' => 'id'),
         true);
 echo Close('div');
 echo Close('div');
+echo Close('div');
 echo Close('div');//Cierra ordengasto_view
 echo Close('form');
+echo Close('div');//Div orden_out
 
 //DIV para mensajes
 echo tagcontent('div', '', array('id'=>'msj_out'));
