@@ -1,6 +1,9 @@
 <?php
-
-echo tagcontent('h3', 'ORDEN DE GASTO', array('style'=>'font-weight:900;text-align:center;'));
+echo Open('div', array('class'=>'panel panel-danger'));
+    echo Open('div', array('class'=>'panel panel-heading'));
+     echo tagcontent('h3', 'ORDEN DE GASTO', array('style'=>'font-weight:900;text-align:center;'));
+    echo close ('div');
+ echo Open('div', array('class'=>'panel-body'));
 echo tagcontent('h4', 'Para uso de las direcciones y unidades ejectutoras', array('style'=>'text-align:center;'));
 echo lineBreak2(1);
 echo Open('div');
@@ -117,6 +120,7 @@ echo Open('div');
             echo tagcontent('td', '');
         echo Close('tr');
     echo Close('table');
+   echo Close('div');
 echo Close('div');
 ?>
 <script>
