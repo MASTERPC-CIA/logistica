@@ -35,9 +35,9 @@ $caja_texto = '<input type="text" id="search" placeholder="Ingrese valor a busca
                                 echo tagcontent('td', $val->hora);
                                 echo '<td>';
                                 ?>
-                                <button type="button"  title = "Imprimir InterConsulta " data-target="opcion_elegida" class="btn btn-default fa fa-print" id="ajaxpanelbtn" data-url="<?php echo base_url('emergencia/interconsultas/get_list_interconsulta_id/'.$val->id)?>"></button>
-                                <button type="button"  title = "Editar InterConsulta" data-target="opcion_elegida" class="btn btn-warning fa fa-edit" id="ajaxpanelbtn" data-url="<?php echo base_url('emergencia/interconsultas/modificacion_interconsu_id/'.$val->id)?>"></button>
-                                <button type="button"  title = "Anular InterConsulta" data-target="opcion_elegida" class="btn btn-danger fa fa-trash-o" id="ajaxpanelbtn" data-url="<?php echo base_url('emergencia/interconsultas/anular_interconsulta_view_id/'.$val->id)?>"></button>
+                                <button type="button"  title = "Imprimir Orden " data-target="ordenes_list" class="btn btn-default fa fa-print" id="ajaxpanelbtn" data-url="<?php echo base_url('logistica/ordengasto/printOrden/'.$val->id)?>"></button>
+                                <button type="button"  title = "Editar Orden" data-target="ordenes_list" class="btn btn-warning fa fa-edit" id="ajaxpanelbtn" data-url="<?php echo base_url('emergencia/interconsultas/modificacion_interconsu_id/'.$val->id)?>"></button>
+                                <button type="button"  title = "Anular Orden" data-target="ordenes_list" class="btn btn-danger fa fa-trash-o" id="ajaxpanelbtn" data-url="<?php echo base_url('emergencia/interconsultas/anular_interconsulta_view_id/'.$val->id)?>"></button>
                                 <?php
                                 echo '</td>';
                                 $sumatoria_total += $val->total;

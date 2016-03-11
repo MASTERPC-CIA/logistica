@@ -41,5 +41,58 @@ class ordengasto_library {
         $this->ci->load->view('common/templates/dashboard_lte', $res);
     }
 
+    /* Imprime el listado segun los parametros especificados */
+
+    function printListado($fechaDesde, $fechaHasta, $empleadoId) {
+        $where = array();
+        $join_clause = array();
+
+        //Enviamos los valores en vacio si son -1
+        /* Programacion Funcional de un IF. (condicion ? true : false) */
+        $empleadoId = ($empleadoId == -1 ? '' : $empleadoId);
+
+        if (!empty($empleadoId)): $where['ord_user_id'] = $empleadoId;
+        endif;
+        if (!empty($fechaDesde)): $where['ord_fecha >='] = $fechaDesde;
+        endif;
+        if (!empty($fechaHasta)): $where['ord_fecha <='] = $fechaHasta;
+        endif;
+
+        $join_clause[] = array('table' => 'billing_empleado emp_realiz', 'condition' => 'ord_user_id = emp_realiz.id');
+        $join_clause[] = array('table' => 'billing_empleado emp_aprob', 'condition' => 'ord_user_aprobacion = emp_aprob.id');
+
+        $json_res = $this->ci->generic_model->get_join('orden_gasto ord', $where, $join_clause, 'ord.id, ord_numero numero, ord_fecha fecha, ord_hora hora, '
+                . 'ord_total total, CONCAT_WS(" ", emp_realiz.nombres, emp_realiz.apellidos) realizado_por,'
+                . 'CONCAT_WS(" ", emp_aprob.nombres, emp_aprob.apellidos) aprobado_por', '');
+        $resultado = count($json_res);
+        $json_res = json_encode($json_res);
+        $res['data'] = $json_res;
+        $res['num_reg'] = $resultado;
+        $res['subject'] = 'PARTIDAS';
+        $this->ci->load->view('orden_gasto/result_list', $res);
+    }
+
+    /* imprime una orden de gasto y su detalle */
+
+    function printById($orden_id) {
+        $orden_data  = $res['orden_data'] = $this->ci->ordengasto_model->getData($orden_id);
+        $detalle =  $this->ci->ordengasto_model->getDetalle($orden_id);
+        
+        //Todas las partidas pertenecen a la misma subtarea. Extraemos el padre de la primera [0]
+        //Subtarea
+        $subtarea = $res['subtarea'] = $this->ci->ordengasto_model->getParent($detalle[0]->odet_partida_id);
+        //tarea
+        $tarea = $res['tarea'] = $this->ci->ordengasto_model->getCtaData($subtarea->parent,'id, cod, nombre, parent');
+        //subactividad
+        $subactividad = $res['subactividad'] = $this->ci->ordengasto_model->getCtaData($tarea->parent,'id, cod, nombre, parent');
+        //actividad
+        $actividad = $res['actividad'] = $this->ci->ordengasto_model->getCtaData($subactividad->parent,'id, cod, nombre, parent');
+        //programa
+        $programa = $res['programa'] = $this->ci->ordengasto_model->getCtaData($actividad->parent,'id, cod, nombre, parent');
+        //area_funcional
+        $area_funcional = $res['area_funcional'] = $this->ci->ordengasto_model->getCtaData($programa->parent,'id, cod, nombre, parent');
+        $res['detalle'] = json_encode($detalle);
+        $this->ci->load->view('orden_gasto/print_orden', $res);
+    }
 
 }

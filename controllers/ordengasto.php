@@ -21,12 +21,13 @@ class Ordengasto extends MX_Controller {
     public function index() {
         $this->ordengasto_library->newGastoView();
     }
-    
+
     public function reporteView() {
         $this->ordengasto_library->reporteView();
     }
 
-    /*Extrae todos los hijos de una cuenta del plan de proyectos, llamada desde vista*/
+    /* Extrae todos los hijos de una cuenta del plan de proyectos, llamada desde vista */
+
     public function getChildrens($idParent, $tipo_id) {
         $list = $this->generic_model->get('plan_proyectos', array('parent' => $idParent, 'tipo_id' => $tipo_id), 'id, nombre');
         echo json_encode($list);
@@ -92,39 +93,20 @@ class Ordengasto extends MX_Controller {
             echo tagcontent('script', '$("#ordengasto_view").hide(500);');
         }
     }
-    
-     /* Filtra segun los parametros de busqueda para generar el listado */
+
+    /* Filtra segun los parametros de busqueda para generar el listado */
+
     function search() {
-        $fDesde = $this->input->post('fechaIn');
-        $fHasta = $this->input->post('fechaFin');
+        $fechaDesde = $this->input->post('fechaIn');
+        $fechaHasta = $this->input->post('fechaFin');
         $empleadoId = $this->input->post('empleado_id');
 
-        $where = array();
-        $join_clause = array();
-
-        //Enviamos los valores en vacio si son -1
-        /* Programacion Funcional de un IF. (condicion ? true : false) */
-        $empleadoId = ($empleadoId == -1 ? '' : $empleadoId);
-
-        if (!empty($empleadoId)): $where['ord_user_id'] = $empleadoId;
-        endif;
-        if (!empty($fDesde)): $where['ord_fecha >='] = $fDesde;
-        endif;
-        if (!empty($fHasta)): $where['ord_fecha <='] = $fHasta;
-        endif;
-
-        $join_clause[] = array('table' => 'billing_empleado emp_realiz', 'condition' => 'ord_user_id = emp_realiz.id');
-        $join_clause[] = array('table' => 'billing_empleado emp_aprob', 'condition' => 'ord_user_aprobacion = emp_aprob.id');
-
-        $json_res = $this->generic_model->get_join('orden_gasto ord', $where, 
-                $join_clause, 'ord.id, ord_numero numero, ord_fecha fecha, ord_hora hora, '
-                . 'ord_total total, CONCAT_WS(" ", emp_realiz.nombres, emp_realiz.apellidos) realizado_por,'
-                . 'CONCAT_WS(" ", emp_aprob.nombres, emp_aprob.apellidos) aprobado_por', '');
-        $resultado = count($json_res);
-        $json_res = json_encode($json_res);
-        $res['data'] = $json_res;
-        $res['num_reg'] = $resultado;
-        $res['subject'] = 'PARTIDAS';
-        $this->load->view('orden_gasto/result_list', $res);
+        $this->ordengasto_library->printListado($fechaDesde, $fechaHasta, $empleadoId);
     }
+
+    /* Muestra una orden de gasto para imprimirla */
+    function printOrden($orden_id) {
+        $this->ordengasto_library->printById($orden_id);
+    }
+
 }
