@@ -22,6 +22,9 @@ class ordengasto_library {
         $data_orden['areas_list'] = $areas_func_list;
         $data_orden['empleados'] = $empleados;
         $data_orden['secuencia'] = $this->secuencia_orden;
+        $data_orden['iva'] = 0;
+        $data_orden['gasto_og'] = 0;
+        $data_orden['total'] = 0;
 
         $res['view'] = $this->ci->load->view('orden_gasto/new_gasto', $data_orden, TRUE);
         $res['title'] = 'Orden Gasto-Logistica';
@@ -75,24 +78,37 @@ class ordengasto_library {
     /* imprime una orden de gasto y su detalle */
 
     function printById($orden_id) {
-        $orden_data  = $res['orden_data'] = $this->ci->ordengasto_model->getData($orden_id);
-        $detalle =  $this->ci->ordengasto_model->getDetalle($orden_id);
-        
+        $orden_data = $res['orden_data'] = $this->ci->ordengasto_model->getData($orden_id);
+        $detalle = $this->ci->ordengasto_model->getDetalle($orden_id);
+
         //Todas las partidas pertenecen a la misma subtarea. Extraemos el padre de la primera [0]
         //Subtarea
         $subtarea = $res['subtarea'] = $this->ci->ordengasto_model->getParent($detalle[0]->odet_partida_id);
         //tarea
-        $tarea = $res['tarea'] = $this->ci->ordengasto_model->getCtaData($subtarea->parent,'id, cod, nombre, parent');
+        $tarea = $res['tarea'] = $this->ci->ordengasto_model->getCtaData($subtarea->parent, 'id, cod, nombre, parent');
         //subactividad
-        $subactividad = $res['subactividad'] = $this->ci->ordengasto_model->getCtaData($tarea->parent,'id, cod, nombre, parent');
+        $subactividad = $res['subactividad'] = $this->ci->ordengasto_model->getCtaData($tarea->parent, 'id, cod, nombre, parent');
         //actividad
-        $actividad = $res['actividad'] = $this->ci->ordengasto_model->getCtaData($subactividad->parent,'id, cod, nombre, parent');
+        $actividad = $res['actividad'] = $this->ci->ordengasto_model->getCtaData($subactividad->parent, 'id, cod, nombre, parent');
         //programa
-        $programa = $res['programa'] = $this->ci->ordengasto_model->getCtaData($actividad->parent,'id, cod, nombre, parent');
+        $programa = $res['programa'] = $this->ci->ordengasto_model->getCtaData($actividad->parent, 'id, cod, nombre, parent');
         //area_funcional
-        $area_funcional = $res['area_funcional'] = $this->ci->ordengasto_model->getCtaData($programa->parent,'id, cod, nombre, parent');
+        $area_funcional = $res['area_funcional'] = $this->ci->ordengasto_model->getCtaData($programa->parent, 'id, cod, nombre, parent');
         $res['detalle'] = json_encode($detalle);
         $this->ci->load->view('orden_gasto/print_orden', $res);
+    }
+
+    /* Muestra la ventana para editar una orden de gasto */
+
+    function editView($orden_id) {
+        $detalle = $this->ci->ordengasto_model->getDetalle($orden_id);
+
+        $res['orden_id'] = $orden_id;
+        $res['orden_data'] = $this->ci->generic_model->get_data('orden_gasto', 
+                array('id' => $orden_id), 'ord_iva, ord_numero, ord_gasto_og, ord_total, ord_subtarea_id', null, 1);
+//        $res['iva'] = $this->generic_model->get_val_where('orden_gasto', array('id'=>$orden_id), 'ord_iva');
+        $res['detalle'] = $detalle;
+        $this->ci->load->view('orden_gasto/edit_view', $res);
     }
 
 }

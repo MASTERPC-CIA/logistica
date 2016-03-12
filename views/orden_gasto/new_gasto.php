@@ -20,12 +20,16 @@ echo Open('div', array('id'=>'content_detalle_orden', 'style'=>'display:none;'))
         //Panel content
             echo Open('div', array('class' => 'panel panel-body', 'id' => 'form_content'));
             /*DETALLE*/
+                $res['iva'] = $iva;
+                $res['gasto_og'] = $gasto_og;
+                $res['total'] = $total;
                 $this->load->view('orden_gasto/detalle');
     //            echo $contenido;
             echo Close('div');
     echo Close('div');
 echo Close('div');//content_detalle_orden
 /*FIRMAS PIE*/
+echo LineBreak();
 echo Open('div', array('class' => 'col-md-12'));
 echo Open('div', array('class' => 'input-group'));
 echo tagcontent('span', 'ELABORADO POR: ', array('class' => 'input-group-addon'));
@@ -55,3 +59,36 @@ echo Close('div');//Div orden_out
 
 //DIV para mensajes
 echo tagcontent('div', '', array('id'=>'msj_out'));
+?>
+<script>
+    var count_partidas = 0;
+    /*Cargamos los datos de la partida digitada*/
+    var load_partida = function (datum) {
+        //        console.log(datum);
+        id_partida = datum.id;
+        cod_partida = datum.ci;
+        programa_id = $('#combo_programas').val();
+        subtarea_id = $('#combo_subtareas').val();
+        //Validamos que haya seleccionado los combobox para que script no de error
+        if (programa_id == null) {
+            alertaError('No ha seleccionado un programa');
+        } else if (subtarea_id != datum.parent) {//Validamos que la partida pertenezca a la subtarea
+            alertaError('Esta partida no pertenece a la Subtarea seleccionada');
+        } else {
+            $.ajax({
+                type: "POST",
+                url: "ordengasto/loadDetalleView",
+                dataType: 'html',
+                data: {id_partida: id_partida, cod_partida: cod_partida, programa_id: programa_id, count_partidas: (parseInt(count_partidas) + 1)},
+                success: function (row) {
+                    console.log(row);
+                    $('#partida_detalle').append(row);
+                    $('#partida_id').text('');
+                    count_partidas++;
+                    //                    console.log('Contador: '+count_partidas);
+                }
+            });
+        }
+    };
+    $.autosugest_search('#partida_id');
+</script>

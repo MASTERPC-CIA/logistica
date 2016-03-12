@@ -24,7 +24,7 @@ class Ordengasto_model extends CI_Model {
 
     /* Guarda una nueva orden de gasto y su detalle */
 
-    function save($array_partidas, $ord_fecha, $ord_hora, $ord_numero, $ord_referencia, $ord_cod_unidad, $ord_nombre_unidad, $ord_unidad_ejecutora, $ord_proyecto, $ord_subproyecto, $ord_gasto_og, $ord_iva, $ord_total, $ord_user_id, $ord_user_revision, $ord_user_relator, $ord_user_aprobacion, $ord_estado = 1, $ord_observaciones = null) {
+    function save($array_partidas, $ord_fecha, $ord_hora, $ord_numero, $ord_referencia, $ord_cod_unidad, $ord_nombre_unidad, $ord_unidad_ejecutora, $ord_proyecto, $ord_subproyecto, $ord_subtarea_id, $ord_gasto_og, $ord_iva, $ord_total, $ord_user_id, $ord_user_revision, $ord_user_relator, $ord_user_aprobacion, $ord_estado = 1, $ord_observaciones = null) {
         $data = array(
             'ord_fecha' => $ord_fecha,
             'ord_hora' => $ord_hora,
@@ -35,6 +35,7 @@ class Ordengasto_model extends CI_Model {
             'ord_unidad_ejecutora' => $ord_unidad_ejecutora,
             'ord_proyecto' => $ord_proyecto,
             'ord_subproyecto' => $ord_subproyecto,
+            'ord_subtarea_id' => $ord_subtarea_id,
             'ord_gasto_og' => $ord_gasto_og,
             'ord_iva' => $ord_iva,
             'ord_total' => $ord_total,
@@ -77,12 +78,72 @@ class Ordengasto_model extends CI_Model {
                 echo error_info_msg(' Error al guardar detalle.');
                 return -1;
             }
-            $updateSaldo = $this->updatePresupuesto($partida['odet_partida_id'], $partida['odet_gasto']);
+            //Enviamos el valor en negativo porque debe restarse del saldo
+            $updateSaldo = $this->updatePresupuesto($partida['odet_partida_id'], ($partida['odet_gasto']*-1));
             //Si ocurrio no se actualizo el saldo por saldos insuficientes
             if ($updateSaldo == -1) {
                 return -1;
             }
-            $updateParent = $this->updateParents($partida['odet_partida_id'], $partida['odet_gasto']);
+            $updateParent = $this->updateParents($partida['odet_partida_id'], ($partida['odet_gasto']*-1));
+            //Si ocurrio no se actualizo el saldo por saldos insuficientes
+            if ($updateParent == -1) {
+                return -1;
+            }
+        }
+    }
+    
+     
+    /*Actualiza una orden de gasto y su detalle*/
+    function update($array_partidas, $orden_id, $ord_gasto_og, $ord_iva, $ord_total,  $observaciones = null){
+        $data = array(
+            'ord_gasto_og' => $ord_gasto_og,
+            'ord_iva' => $ord_iva,
+            'ord_total' => $ord_total,
+            'ord_user_edit' => $this->user->id,
+            'ord_fecha_edicion' => date('Y-m-d', time()),
+            'ord_hora_edicion' => date('H:i:s', time()),
+            'ord_observaciones' => $observaciones,
+        );
+
+        //Actualizamos en tabla orden_gasto
+        $id_orden = $this->generic_model->update_by_id('orden_gasto', $data, $orden_id);
+        //retornamos -1 para hacer las validaciones en el controlador
+        if ($id_orden == -1) {
+            echo error_info_msg(' Error al guardar cabecera de la orden de gasto.');
+            return $id_orden;
+        }
+        $id_detalle = $this->updateDetalle($array_partidas, $id_orden);
+        if ($id_detalle == -1) {
+            return -1;
+        }
+        return $id_orden;
+    }
+    
+     /* Actualiza el detalle de cada partida que pertenece a una orden de gasto */
+
+    function updateDetalle($array_partidas, $id_orden) {
+        //Primer foreach recorre el numero de partidas
+        foreach ($array_partidas as $partida) {
+            $array_detalle = array(
+                'odet_empleado_id' => $partida['odet_empleado_id'],
+                'odet_beneficiario_id' => $partida['odet_beneficiario_id'],
+                'odet_concepto' => $partida['odet_concepto'],
+                'odet_comprobante_num' => $partida['odet_comprobante_num'],
+                'odet_gasto' => $partida['odet_gasto'],
+                'odet_asignacion' => $partida['odet_asignacion'],
+                'odet_gasto_acumulado' => $partida['odet_gasto_acumulado'],
+                'odet_saldo_vigente' => $partida['odet_saldo_vigente'],
+            );
+               
+            $this->generic_model->update_by_id('orden_gasto_detalle', $array_detalle, $partida['id']);
+            //Calculamos la diferencia para actualizar dicho valor que puede ser positivo o negativo
+            $diferencia = $partida['valor_anterior'] - $partida['odet_gasto'];
+            $updateSaldo = $this->updatePresupuesto($partida['odet_partida_id'], $diferencia);
+            //Si ocurrio no se actualizo el saldo por saldos insuficientes
+            if ($updateSaldo == -1) {
+                return -1;
+            }
+            $updateParent = $this->updateParents($partida['odet_partida_id'], $diferencia);
             //Si ocurrio no se actualizo el saldo por saldos insuficientes
             if ($updateParent == -1) {
                 return -1;
@@ -92,11 +153,11 @@ class Ordengasto_model extends CI_Model {
 
     /* Actualiza el valor del presupuesto vigente de cada partida en el plan de proyectos */
 
+    // El parametro 'valor' en negativo determina que se va a debitar del presupuesto
     function updatePresupuesto($partida_id, $valor) {
         $presupuestoActual = $this->generic_model->get_val_where('plan_proyectos', array('id' => $partida_id), 'presupuesto_vigente');
-        $nuevoPresupuesto = $presupuestoActual - $valor;
-        
-       
+        $nuevoPresupuesto = $presupuestoActual + $valor;
+
         if ($nuevoPresupuesto < 0) {
             echo error_info_msg(' No hay suficiente presupuesto en la cuenta');
             return -1;
@@ -108,7 +169,7 @@ class Ordengasto_model extends CI_Model {
 
     function updateParents($partida_id, $valor) {
         $parent_data = $this->getParent($partida_id, 'id');
-        
+
         while (!empty($parent_data)) {
             $updateParent = $this->updatePresupuesto($parent_data->id, $valor);
             if ($updateParent == -1) {

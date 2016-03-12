@@ -9,7 +9,7 @@ switch ($programa_id) {
     case 2://Programa Administracion general
         $input_beneficiario_search = input(array('type' => 'text', 'id' => 'beneficiario_ruc'.$count_partidas, 'name' => 'beneficiario_ruc',
             'placeholder' => 'Nombre Beneficiario', 'callback' => 'load_beneficiario', 'class'=>'input_beneficiario', 'count'=>$count_partidas,
-            'data-url' => base_url('common/autosuggest/get_empleado_by_name/%QUERY')));
+            'data-url' => base_url('common/autosuggest/get_empleado_by_name/%QUERY'), 'value'=>$beneficiario_ruc));
         //Hiden tipo empleado
         echo input(array('type'=>'hidden', 'id'=>'hidden_tipo_beneficiario'.$count_partidas, 'name'=>'partidas['.$count_partidas.'][odet_tipo_beneficiario]', 'value'=>'E'));
         break;
@@ -17,33 +17,39 @@ switch ($programa_id) {
     case 17://Programa Alistamiento operacional de las Fuerzas Armadas(57)
         $input_beneficiario_search = input(array('type' => 'text', 'id' => 'beneficiario_ruc'.$count_partidas, 'name' => 'beneficiario_ruc',
             'placeholder' => 'Nombre Beneficiario', 'callback' => 'load_beneficiario', 'class'=>'input_beneficiario', 'count'=>$count_partidas,
-            'data-url' => base_url('common/autosuggest/get_beneficiario_by_name/%QUERY')));
+            'data-url' => base_url('common/autosuggest/get_beneficiario_by_name/%QUERY'), 'value'=>$beneficiario_ruc));
         //Hiden tipo beneficiario
         echo input(array('type'=>'hidden', 'id'=>'hidden_tipo_beneficiario'.$count_partidas, 'name'=>'partidas['.$count_partidas.'][odet_tipo_beneficiario]', 'value'=>'B'));
 
         break;
 }
-$btn_remove = tagcontent('button', 'X', array('class'=>'btn btn-danger btn-xs','id'=>'ajaxformbtn','data-target'=>''));
+$btn_remove = tagcontent('button', 'X', array('class'=>'btn btn-danger btn-xs','id'=>'ajaxformbtn','data-target'=>'', 'count'=>$count_partidas));
 /*Hiddens a enviar*/
 echo input(array('type'=>'hidden', 'id'=>'hidden_id_partida'.$count_partidas, 'name'=>'partidas['.$count_partidas.'][odet_partida_id]', 'value'=>$id_partida));
-echo input(array('type'=>'hidden', 'id'=>'hidden_beneficiario_id'.$count_partidas, 'name'=>'partidas['.$count_partidas.'][odet_beneficiario_id]', 'value'=>''));
+echo input(array('type'=>'hidden', 'id'=>'hidden_beneficiario_id'.$count_partidas, 'name'=>'partidas['.$count_partidas.'][odet_beneficiario_id]', 'value'=>$beneficiario_id));
 echo input(array('type'=>'hidden', 'id'=>'hidden_empleado_id'.$count_partidas, 'name'=>'partidas['.$count_partidas.'][odet_empleado_id]', 'value'=>''));
 echo input(array('type'=>'hidden', 'id'=>'hidden_programa_id', 'name'=>'partidas['.$count_partidas.'][odet_programa_id]', 'value'=>$programa_id));
 echo input(array('type'=>'hidden', 'id'=>'hidden_asignacion'.$count_partidas, 'name'=>'partidas['.$count_partidas.'][odet_asignacion]', 'value'=>$presupuesto_inicial));
-echo input(array('type'=>'hidden', 'id'=>'hidden_gasto_acumulado'.$count_partidas, 'name'=>'partidas['.$count_partidas.'][odet_gasto_acumulado]', 'value'=>''));
-echo input(array('type'=>'hidden', 'id'=>'hidden_saldo_vigente'.$count_partidas, 'name'=>'partidas['.$count_partidas.'][odet_saldo_vigente]', 'value'=>''));
+echo input(array('type'=>'hidden', 'id'=>'hidden_gasto_acumulado'.$count_partidas, 'name'=>'partidas['.$count_partidas.'][odet_gasto_acumulado]', 'value'=>$gasto_acumulado));
+echo input(array('type'=>'hidden', 'id'=>'hidden_saldo_vigente'.$count_partidas, 'name'=>'partidas['.$count_partidas.'][odet_saldo_vigente]', 'value'=>$saldo_vigente));
 
-
-echo tagcontent('td', $btn_remove);
+//No permitimos eliminar partidas desde editar
+if(isset($editar_orden)){
+    echo input(array('type'=>'hidden', 'id'=>'valor_anterior'.$count_partidas, 'name'=>'partidas['.$count_partidas.'][valor_anterior]', 'value'=>$gasto));
+    echo input(array('type'=>'hidden', 'id'=>'detalle_id'.$count_partidas, 'name'=>'partidas['.$count_partidas.'][id]', 'value'=>$detalle_id));
+    echo tagcontent('td');
+}else{
+    echo tagcontent('td', $btn_remove);
+}
 echo tagcontent('td', $cod_partida);
 echo tagcontent('td', $input_beneficiario_search);
-echo tagcontent('td', '', array('id'=>'td_beneficiario_nombre'.$count_partidas, 'required'=>''));
-echo tagcontent('td', input(array('id'=>'input_concepto', 'name'=>'partidas['.$count_partidas.'][odet_concepto]')));
-echo tagcontent('td', input(array('id'=>'input_ncomprobante', 'name'=>'partidas['.$count_partidas.'][odet_comprobante_num]')));
-echo tagcontent('td', input(array('id'=>'input_valor', 'class'=>'inputs_valor', 'name'=>'partidas['.$count_partidas.'][odet_gasto]', 'id_partida'=>$id_partida, 'count_partidas'=>$count_partidas, 'value'=>'0')));
+echo tagcontent('td', $beneficiario_nombre, array('id'=>'td_beneficiario_nombre'.$count_partidas, 'required'=>''));
+echo tagcontent('td', input(array('id'=>'input_concepto', 'name'=>'partidas['.$count_partidas.'][odet_concepto]', 'value'=>$concepto)));
+echo tagcontent('td', input(array('id'=>'input_ncomprobante', 'name'=>'partidas['.$count_partidas.'][odet_comprobante_num]', 'value'=>$comprobante_num)));
+echo tagcontent('td', input(array('id'=>'input_valor', 'class'=>'inputs_valor', 'name'=>'partidas['.$count_partidas.'][odet_gasto]', 'id_partida'=>$id_partida, 'count_partidas'=>$count_partidas, 'value'=>$gasto)));
 echo tagcontent('td', $presupuesto_inicial, array('id'=>'td_asignacion_codificada'.$count_partidas, 'class'=>'tds_asignacionCodificada'));
-echo tagcontent('td', '', array('id'=>'td_gasto_acumulado'.$count_partidas, 'class'=>'tds_gastoAcumulado'));
-echo tagcontent('td', '', array('id'=>'td_saldo_vigente'.$count_partidas, 'class'=>'tds_saldoVigente'));
+echo tagcontent('td', $gasto_acumulado, array('id'=>'td_gasto_acumulado'.$count_partidas, 'class'=>'tds_gastoAcumulado'));
+echo tagcontent('td', $saldo_vigente, array('id'=>'td_saldo_vigente'.$count_partidas, 'class'=>'tds_saldoVigente'));
 
 echo Close('tr');
 //echo Close('table');
@@ -104,6 +110,8 @@ echo Close('tr');
         totalValor = parseFloat($('#td_totalGastoOg').text());
         totalValorMasIva = totalValor+(totalValor * iva)/100;
         $('#td_totalValor').text(totalValorMasIva);
+        $('#input_total').val(totalValorMasIva);
+
     });
     
     function calcularTotales(){
@@ -142,6 +150,7 @@ echo Close('tr');
     /*Boton remover. Elimina un tr*/
     $('.btn-xs').click(function(event){
         event.preventDefault;
+        var count_partidas = $(this).attr('count');
         $('#tr'+count_partidas).remove();
     });
 </script>

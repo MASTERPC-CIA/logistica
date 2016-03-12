@@ -41,6 +41,16 @@ class Ordengasto extends MX_Controller {
         $res['programa_id'] = $this->input->post('programa_id');
         $res['count_partidas'] = $this->input->post('count_partidas');
         $res['presupuesto_inicial'] = $this->generic_model->get_val_where('plan_proyectos', array('id' => $id_partida), 'presupuesto_inicial');
+        //Campos vacios para reutilizar la misma vista para editar
+        $res['beneficiario_id'] = '';
+        $res['beneficiario_ruc'] = '';
+        $res['beneficiario_nombre'] = '';
+        $res['concepto'] = '';
+        $res['comprobante_num'] = '';
+        $res['gasto'] = 0;
+        $res['gasto_acumulado'] = 0;
+        $res['saldo_vigente'] = 0;
+
         $this->load->view('orden_gasto/partidaDetalle', $res);
     }
 
@@ -56,6 +66,7 @@ class Ordengasto extends MX_Controller {
         $ord_unidad_ejecutora = $this->input->post('ord_unidad_ejecutora');
         $ord_proyecto = null;
         $ord_subproyecto = null;
+        $ord_subtarea_id = $this->input->post('combo_subtareas');
         $ord_gasto_og = $this->input->post('input_gasto_og');
         $ord_iva = $this->input->post('input_iva');
         $ord_total = $this->input->post('input_total');
@@ -78,7 +89,7 @@ class Ordengasto extends MX_Controller {
         $this->db->trans_begin();
 
         $id_orden = $this->ordengasto_model->save(
-                $array_partidas, $ord_fecha, $ord_hora, $ord_numero, $ord_referencia, $ord_cod_unidad, $ord_nombre_unidad, $ord_unidad_ejecutora, $ord_proyecto, $ord_subproyecto, $ord_gasto_og, $ord_iva, $ord_total, $ord_user_id, $ord_user_revision, $ord_user_relator, $ord_user_aprobacion);
+                $array_partidas, $ord_fecha, $ord_hora, $ord_numero, $ord_referencia, $ord_cod_unidad, $ord_nombre_unidad, $ord_unidad_ejecutora, $ord_proyecto, $ord_subproyecto, $ord_subtarea_id, $ord_gasto_og, $ord_iva, $ord_total, $ord_user_id, $ord_user_revision, $ord_user_relator, $ord_user_aprobacion);
         
         if($id_orden == -1){#Si ha ocurrido un error en la transaccion
             $this->db->trans_rollback();
@@ -114,6 +125,47 @@ class Ordengasto extends MX_Controller {
     /* Muestra una orden de gasto para imprimirla */
     function printOrden($orden_id) {
         $this->ordengasto_library->printById($orden_id);
+    }
+    
+    /*Muestra las opciones para editar el detalle de una orden*/
+    function editView($orden_id) {
+        $this->ordengasto_library->editView($orden_id);
+
+    }
+    
+    /*Edita el detalle de una orden de gasto*/
+    function editOrden(){
+        $orden_id = $this->input->post('orden_id');
+        $ord_gasto_og = $this->input->post('input_gasto_og');
+        $ord_iva = $this->input->post('input_iva');
+        $ord_total = $this->input->post('input_total');
+        $array_partidas = $this->input->post('partidas');
+
+
+        $this->db->trans_begin();
+
+        $id_orden = $this->ordengasto_model->update(
+                $array_partidas, $orden_id, $ord_gasto_og, $ord_iva, $ord_total);
+        
+        if($id_orden == -1){#Si ha ocurrido un error en la transaccion
+            $this->db->trans_rollback();
+            $this->res_msj .= error_msg('<br>Orden de Gasto NO Actualizada');
+            echo tagcontent('script', 'alertaError("Ha ocurrido un error")');
+            echo $this->res_msj;
+            die();
+        }
+//Verificación de transacción:
+// verifico que todo elproceso en si este bien ejecutado
+        if ($this->db->trans_status() === FALSE) {
+            $this->db->trans_rollback();
+            $this->res_msj .= error_msg('<br>Ha ocurrido un error al actualizar la orden.');
+            echo $this->res_msj;
+        } else {
+            $this->res_msj .= success_msg('. Orden de Gasto Actualizada');
+            echo $this->res_msj;
+            $this->db->trans_commit();
+//            echo tagcontent('script', '$("#orden_out").hide(500);');
+        }
     }
 
 }
