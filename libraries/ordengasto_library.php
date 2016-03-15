@@ -47,7 +47,7 @@ class ordengasto_library {
     /* Imprime el listado segun los parametros especificados */
 
     function printListado($fechaDesde, $fechaHasta, $empleadoId) {
-        $where = array();
+        $where = array('ord_estado !='=>'-1');
         $join_clause = array();
 
         //Enviamos los valores en vacio si son -1
@@ -109,6 +109,15 @@ class ordengasto_library {
 //        $res['iva'] = $this->generic_model->get_val_where('orden_gasto', array('id'=>$orden_id), 'ord_iva');
         $res['detalle'] = $detalle;
         $this->ci->load->view('orden_gasto/edit_view', $res);
+    }
+    
+    
+    /* Muestra la ventana para anular una orden de gasto */
+    function anularView($orden_id) {
+        $res['orden_id'] = $orden_id;
+        $res['orden_data'] = $this->ci->generic_model->get_data('orden_gasto', 
+                array('id' => $orden_id), 'ord_iva, ord_numero, ord_gasto_og, ord_total, ord_subtarea_id', null, 1);
+        $this->ci->load->view('orden_gasto/anular_view', $res);
     }
 
 }

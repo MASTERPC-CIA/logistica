@@ -121,7 +121,7 @@ class Ordengasto_model extends CI_Model {
     
      /* Actualiza el detalle de cada partida que pertenece a una orden de gasto */
 
-    function updateDetalle($array_partidas, $id_orden) {
+    function updateDetalle($array_partidas) {
         //Primer foreach recorre el numero de partidas
         foreach ($array_partidas as $partida) {
             $array_detalle = array(
@@ -145,6 +145,30 @@ class Ordengasto_model extends CI_Model {
             }
             $updateParent = $this->updateParents($partida['odet_partida_id'], $diferencia);
             //Si ocurrio no se actualizo el saldo por saldos insuficientes
+            if ($updateParent == -1) {
+                return -1;
+            }
+        }
+    }
+    
+    /* Anula una orden de gasto y devuelve sus valores al plan de proyectos*/
+    function anular($orden_id, $observaciones) {
+        //Enviamos a anular en orden_detalle
+        $data = array('ord_estado'=>'-1', 'ord_observaciones'=>$observaciones);
+        $this->generic_model->update_by_id('orden_gasto', $data, $orden_id);
+        
+        //Extraemos los ids de las partidas de detalle
+        $fields = 'odet_partida_id id, odet_gasto valor';
+        $partidas = $this->generic_model->get_data('orden_gasto_detalle', array('odet_orden_id'=>$orden_id), $fields);
+        
+        foreach ($partidas as $partida) {
+            //Actualizamos la cuenta del plan
+            $updateSaldo = $this->updatePresupuesto($partida->id, $partida->valor);
+             if ($updateSaldo == -1) {
+                return -1;
+            }
+            //Actualizamos los parentes de la cuenta
+            $updateParent = $this->updateParents($partida->id, $partida->valor);
             if ($updateParent == -1) {
                 return -1;
             }

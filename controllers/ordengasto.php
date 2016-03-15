@@ -112,7 +112,7 @@ class Ordengasto extends MX_Controller {
         }
     }
 
-    /* Filtra segun los parametros de busqueda para generar el listado */
+    /* Filtra segun los parametros de busqueda para generar el listado de ordenes de gasto*/
 
     function search() {
         $fechaDesde = $this->input->post('fechaIn');
@@ -162,6 +162,41 @@ class Ordengasto extends MX_Controller {
             echo $this->res_msj;
         } else {
             $this->res_msj .= success_msg('. Orden de Gasto Actualizada');
+            echo $this->res_msj;
+            $this->db->trans_commit();
+//            echo tagcontent('script', '$("#orden_out").hide(500);');
+        }
+    }
+    /*Muestra las opciones para editar el detalle de una orden*/
+    function anularView($orden_id) {
+        $this->ordengasto_library->anularView($orden_id);
+
+    }
+    
+    /*Edita el detalle de una orden de gasto*/
+    function anularOrden(){
+        $orden_id = $this->input->post('id_orden');
+        $observaciones = $this->input->post('observaciones');
+
+        $this->db->trans_begin();
+        $id_orden = $this->ordengasto_model->anular($orden_id, $observaciones);
+
+        
+        if($id_orden == -1){#Si ha ocurrido un error en la transaccion
+            $this->db->trans_rollback();
+            $this->res_msj .= error_msg('<br>NO se ha podido anular la orden');
+            echo tagcontent('script', 'alertaError("Ha ocurrido un error")');
+            echo $this->res_msj;
+            die();
+        }
+//Verificación de transacción:
+// verifico que todo elproceso en si este bien ejecutado
+        if ($this->db->trans_status() === FALSE) {
+            $this->db->trans_rollback();
+            $this->res_msj .= error_msg('<br>Ha ocurrido un error al anular la orden.');
+            echo $this->res_msj;
+        } else {
+            $this->res_msj .= success_msg('. Orden de Gasto Anulada');
             echo $this->res_msj;
             $this->db->trans_commit();
 //            echo tagcontent('script', '$("#orden_out").hide(500);');
