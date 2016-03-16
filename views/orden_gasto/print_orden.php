@@ -6,12 +6,12 @@
 date_default_timezone_set('America/Guayaquil');
 
 echo tagcontent('button', '<span class="glyphicon glyphicon-print"></span> Imprimir', array('id' => 'printbtn', 'data-target' => 'print_orden', 'class' => 'btn btn-default pull-left'));
-echo Open('div', array('id' => 'print_orden'));
 $this->load->view('common/hmc_head/encabezado_cuenca'); //Encabezado para el hospital militar
 echo lineBreak2(1, array('class'=>'clear'));
+echo Open('div', array('id' => 'print_orden'));
 ?>
 <!--TABLA 1 HEADER-->
-<table class="table" style=" border: 1px solid black;">
+<table class="table table_ordengasto" style=" border: 1px solid black;">
     <thead>
         <tr>
             <th colspan="2" style="text-align: center">EJERCITO ECUATORIANO</th>
@@ -32,7 +32,7 @@ echo lineBreak2(1, array('class'=>'clear'));
 </table>
 
 <!--TABLA 2 ENCABEZADO ORDEN-->
-<table class="table" style=" border: 1px solid black;">
+<table class="table table_ordengasto" style=" border: 1px solid black;">
     <thead>
         <tr>
             <th rowspan="2" style="vertical-align: middle">FECHA</th>
@@ -112,7 +112,7 @@ echo lineBreak2(1, array('class'=>'clear'));
 </table>
 
 <!--TABLA 3: DETALLE DE PARTIDAS-->
-<table class="table" style=" border: 1px solid black;">
+<table class="table table_ordengasto" style=" border: 1px solid black;">
     <thead>
         <tr>
             <th rowspan="2">CODIGO<br>PRESUPUEST.</th>
@@ -196,7 +196,7 @@ echo lineBreak2(1, array('class'=>'clear'));
 </table>
 
 <!--TABLA 4: PIES Y FIRMAS-->
-<table class="table"style=" border: 1px solid black;">
+<table class="table table_ordengasto"style=" border: 1px solid black;">
     <tbody>
         <tr>
             <td>ELABORADO POR</td>

@@ -20,7 +20,7 @@
     </section>
 </aside>
 <?php $css = array( 
-//    base_url('resources/css//print_format.css'),
+    base_url('resources/css/ordengasto.css'),
 //    base_url('medicos/css/form_002.css')
 //    base_url('resources/css/solicitudes_informes.css')
 );
