@@ -141,12 +141,16 @@ class Ordengasto extends MX_Controller {
         $ord_iva = $this->input->post('input_iva');
         $ord_total = $this->input->post('input_total');
         $array_partidas = $this->input->post('partidas');
-
+        
+        /*Footer*/
+        $user_aprobacion = $this->input->post('aprobado_por');
+        $user_revision = $this->input->post('revisado_por');
+        $user_relator = $this->input->post('relator_pb');
 
         $this->db->trans_begin();
 
         $id_orden = $this->ordengasto_model->update(
-                $array_partidas, $orden_id, $ord_gasto_og, $ord_iva, $ord_total);
+                $array_partidas, $orden_id, $ord_gasto_og, $ord_iva, $ord_total, $user_aprobacion, $user_revision, $user_relator);
         
         if($id_orden == -1){#Si ha ocurrido un error en la transaccion
             $this->db->trans_rollback();

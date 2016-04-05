@@ -39,8 +39,8 @@ $caja_texto = '<input type="text" id="search" placeholder="Ingrese valor a busca
                         foreach ($data as $val) {
                             $estado = $val->estado == '1' ? 'Activa' : 'Anulada';
                             echo Open('tr');
-                               echo tagcontent('td class="actions"', $val->id);
-                               echo tagcontent('td', $val->numero);
+                                echo tagcontent('td class="actions"', $val->id);
+                                echo tagcontent('td', $val->numero);
                                 echo tagcontent('td', '$ '. $val->total);
                                 echo tagcontent('td', $val->realizado_por);
                                 echo tagcontent('td', $val->aprobado_por);
@@ -50,9 +50,13 @@ $caja_texto = '<input type="text" id="search" placeholder="Ingrese valor a busca
                                 echo '<td class="actions">';
                                 ?>
                                 <button type="button"  title = "Imprimir Orden " data-target="ordenes_list" class="btn btn-default fa fa-print" id="ajaxpanelbtn" data-url="<?php echo base_url('logistica/ordengasto/printOrden/'.$val->id)?>"></button>
+                                <?php
+                                if($val->estado == '1'):
+                                ?>
                                 <button type="button"  title = "Editar Orden" data-target="ordenes_list" class="btn btn-warning fa fa-edit" id="ajaxpanelbtn" data-url="<?php echo base_url('logistica/ordengasto/editView/'.$val->id)?>"></button>
                                 <button type="button"  title = "Anular Orden" data-target="ordenes_list" class="btn btn-danger fa fa-trash-o" id="ajaxpanelbtn" data-url="<?php echo base_url('logistica/ordengasto/anularView/'.$val->id)?>"></button>
                                 <?php
+                                endif;
                                 echo '</td>';
                                 $sumatoria_total += $val->total;
                             echo Close('tr');

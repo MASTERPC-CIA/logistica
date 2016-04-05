@@ -94,7 +94,7 @@ class Ordengasto_model extends CI_Model {
     
      
     /*Actualiza una orden de gasto y su detalle*/
-    function update($array_partidas, $orden_id, $ord_gasto_og, $ord_iva, $ord_total,  $observaciones = null){
+    function update($array_partidas, $orden_id, $ord_gasto_og, $ord_iva, $ord_total, $user_aprobacion, $user_revision, $user_relator,  $observaciones = null){
         $data = array(
             'ord_gasto_og' => $ord_gasto_og,
             'ord_iva' => $ord_iva,
@@ -102,6 +102,9 @@ class Ordengasto_model extends CI_Model {
             'ord_user_edit' => $this->user->id,
             'ord_fecha_edicion' => date('Y-m-d', time()),
             'ord_hora_edicion' => date('H:i:s', time()),
+            'ord_user_aprobacion' => $user_aprobacion,
+            'ord_user_revision' => $user_revision,
+            'ord_user_relator' => $user_relator,
             'ord_observaciones' => $observaciones,
         );
 

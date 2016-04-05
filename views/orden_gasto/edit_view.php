@@ -12,6 +12,7 @@ echo Open('form', array('id' => 'form_examen', 'action' => base_url('logistica/o
     $res['total'] = $orden_data->ord_total;
     $res['subtarea_id'] = $orden_data->ord_subtarea_id;
     $this->load->view('orden_gasto/detalle', $res);
+    $this->load->view('orden_gasto/footer', $footer_data);
     echo tagcontent('button', 'Guardar Modificacion', array('class'=>'btn btn-primary','id'=>'ajaxformbtn','data-target'=>'edit_orden'));
 echo Close('form');
 echo Close('div');

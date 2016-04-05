@@ -25,6 +25,11 @@ class ordengasto_library {
         $data_orden['iva'] = 0;
         $data_orden['gasto_og'] = 0;
         $data_orden['total'] = 0;
+        /*Enviamos los usuarios en -1*/
+        $data_orden['footer_data'] = array('revisado_por'=>'-1',
+            'aprobado_por'=>'-1',
+            'relator'=>'-1'
+            );
 
         $res['view'] = $this->ci->load->view('orden_gasto/new_gasto', $data_orden, TRUE);
         $res['title'] = 'Orden Gasto-Logistica';
@@ -109,12 +114,21 @@ class ordengasto_library {
 
     function editView($orden_id) {
         $detalle = $this->ci->ordengasto_model->getDetalle($orden_id);
+        $empleados = $this->ci->generic_model->get('billing_empleado', array(), 'id, CONCAT_WS(" ", nombres, apellidos) nombres');
+
 
         $res['orden_id'] = $orden_id;
+        $fields = 'ord_iva, ord_numero, ord_gasto_og, ord_total, ord_subtarea_id,'
+                . 'ord_user_revision, ord_user_aprobacion, ord_user_relator';
         $res['orden_data'] = $this->ci->generic_model->get_data('orden_gasto', 
-                array('id' => $orden_id), 'ord_iva, ord_numero, ord_gasto_og, ord_total, ord_subtarea_id', null, 1);
+                array('id' => $orden_id), $fields, null, 1);
 //        $res['iva'] = $this->generic_model->get_val_where('orden_gasto', array('id'=>$orden_id), 'ord_iva');
         $res['detalle'] = $detalle;
+        $res['footer_data'] = array('revisado_por'=>$res['orden_data']->ord_user_revision,
+            'aprobado_por'=>$res['orden_data']->ord_user_aprobacion,
+            'relator'=>$res['orden_data']->ord_user_relator,
+            'empleados'=>$empleados
+            );
         $this->ci->load->view('orden_gasto/edit_view', $res);
     }
     
