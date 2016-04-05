@@ -1,5 +1,10 @@
 <?php
-//print_r($data);
+/*Boton Imprimir*/
+echo tagcontent('button', '<span class="glyphicon glyphicon-print"></span> Imprimir', 
+        array('id' => 'printbtn', 'data-target' => 'div_presupuesto_list', 'class' => 'btn btn-default pull-left'));
+/* METODO PARA EXPORTA A EXCEL */
+//echo tagcontent('a', '<span class="glyphicon glyphicon-export"></span> Exportar a Excel', 
+//        array('href' => base_url('laboratorio/index/export_solicitudes_to_excel/'. $id_servicio. '/' . $id_tipo_form .'/'.$paciente_tipo.'/' . $fecha_emision_desde . '/' . $fecha_emision_hasta. '/' . $fecha_realiz_desde. '/' . $fecha_realiz_hasta. '/' . $id_prof_solicita. '/' . $id_paciente), 
 echo Open('div', array('class' => 'col-md-12'));
 $caja_texto = '<input type="text" id="search" placeholder="Ingrese valor a buscar">';
  echo '<div class="panel panel-success">';
@@ -7,19 +12,19 @@ $caja_texto = '<input type="text" id="search" placeholder="Ingrese valor a busca
             . '<font color=white>..............................................................................'
             . '...............................................................</font>'.$caja_texto.'</div>';
         echo '<div class="panel-body">';
-            echo '<div id="div1">';
-              echo Open('table', array('id'=>'table','class' => "table table-fixed-header"));
-             echo '<thead>';
-                    $thead = array(
-                               'Codigo',
-                               'Nombre',
-                               'Area',
-                               'Tipo',
-                               'P. Inicial',
-                               'P. Vigente',
-//                               'Acciones',
-                           );
-                    echo tablethead($thead);
+            echo '<div id="div_presupuesto_list">';
+             //Div para mostrar el logo en la cabecera para imprimir
+            echo Open('div',  array('id'=>'div_header', 'style'=>''));
+                $this->load->view('common/hmc_head/encabezado_cuenca');
+            echo Close('div');
+            echo Open('table', array('id'=>'table','class' => "table table-fixed-header logistica_report"));
+                echo '<thead>';
+                    echo '<th>Codigo</th>';
+                    echo '<th>Nombre</th>';
+                    echo '<th>Area</th>';
+                    echo '<th>Tipo</th>';
+                    echo '<th>P. Inicial</th>';
+                    echo '<th>P. Vigente</th>';
                 echo '</thead>';
                 echo '<tbody>';
                     if(!empty($data)):
@@ -34,13 +39,13 @@ $caja_texto = '<input type="text" id="search" placeholder="Ingrese valor a busca
                                 echo tagcontent('td', $val->tipo);
                                 echo tagcontent('td', $val->presupuesto_inicial);
                                 echo tagcontent('td', $val->presupuesto_vigente);
-                                echo '<td>';
+//                                echo '<td>';
                                 ?>
 <!--                                <button type="button"  title = "Imprimir InterConsulta " data-target="opcion_elegida" class="btn btn-default fa fa-print" id="ajaxpanelbtn" data-url="<?php echo base_url('emergencia/interconsultas/get_list_interconsulta_id/'.$val->id)?>"></button>
                                 <button type="button"  title = "Editar InterConsulta" data-target="opcion_elegida" class="btn btn-warning fa fa-edit" id="ajaxpanelbtn" data-url="<?php echo base_url('emergencia/interconsultas/modificacion_interconsu_id/'.$val->id)?>"></button>
                                 <button type="button"  title = "Anular InterConsulta" data-target="opcion_elegida" class="btn btn-danger fa fa-trash-o" id="ajaxpanelbtn" data-url="<?php echo base_url('emergencia/interconsultas/anular_interconsulta_view_id/'.$val->id)?>"></button>-->
                                 <?php
-                                echo '</td>';
+//                                echo '</td>';
                                 $sumatoria_inicial += $val->presupuesto_inicial;
                                 $sumatoria_vigente += $val->presupuesto_vigente;
                             echo Close('tr');

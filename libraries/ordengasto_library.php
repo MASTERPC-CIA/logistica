@@ -36,6 +36,7 @@ class ordengasto_library {
 
     public function reporteView() {
         $data_search['lista_empleado'] = $this->ci->generic_model->get('billing_empleado', array(), 'id, CONCAT_WS(" ", nombres, apellidos) nom_empleado');
+        $data_search['partidas'] = $this->ci->generic_model->get('plan_proyectos', array('tipo_id'=>'7'), 'id, CONCAT_WS(" ", cod, nombre) nombre');
 //        $data_search['tipos_list'] = $this->ci->generic_model->get('plan_proyectos_tipo');
         $res['view'] = $this->ci->load->view('orden_gasto/reporte_view', $data_search, TRUE);
 //        $res['view'] = $this->load->view('common/crud/crud_view_datatable', $crud);
@@ -46,15 +47,18 @@ class ordengasto_library {
 
     /* Imprime el listado segun los parametros especificados */
 
-    function printListado($fechaDesde, $fechaHasta, $empleadoId) {
+    function printListado($fechaDesde, $fechaHasta, $empleadoId, $partida_id) {
         $where = array('ord_estado !='=>'-1');
         $join_clause = array();
 
         //Enviamos los valores en vacio si son -1
         /* Programacion Funcional de un IF. (condicion ? true : false) */
         $empleadoId = ($empleadoId == -1 ? '' : $empleadoId);
+        $partida_id = ($partida_id == -1 ? '' : $partida_id);
 
         if (!empty($empleadoId)): $where['ord_user_id'] = $empleadoId;
+        endif;
+        if (!empty($partida_id)): $where['odet_partida_id'] = $partida_id;
         endif;
         if (!empty($fechaDesde)): $where['ord_fecha >='] = $fechaDesde;
         endif;
@@ -63,10 +67,12 @@ class ordengasto_library {
 
         $join_clause[] = array('table' => 'billing_empleado emp_realiz', 'condition' => 'ord_user_id = emp_realiz.id');
         $join_clause[] = array('table' => 'billing_empleado emp_aprob', 'condition' => 'ord_user_aprobacion = emp_aprob.id');
+        $join_clause[] = array('table' => 'orden_gasto_detalle', 'condition' => 'odet_orden_id = ord.id');
 
-        $json_res = $this->ci->generic_model->get_join('orden_gasto ord', $where, $join_clause, 'ord.id, ord_numero numero, ord_fecha fecha, ord_hora hora, '
+        $fields ='ord.id, ord_numero numero, ord_fecha fecha, ord_hora hora, '
                 . 'ord_total total, CONCAT_WS(" ", emp_realiz.nombres, emp_realiz.apellidos) realizado_por,'
-                . 'CONCAT_WS(" ", emp_aprob.nombres, emp_aprob.apellidos) aprobado_por', '');
+                . 'CONCAT_WS(" ", emp_aprob.nombres, emp_aprob.apellidos) aprobado_por';
+        $json_res = $this->ci->generic_model->get_join('orden_gasto ord', $where, $join_clause, $fields, 0, null, 'ord.id');
         $resultado = count($json_res);
         $json_res = json_encode($json_res);
         $res['data'] = $json_res;

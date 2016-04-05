@@ -20,6 +20,15 @@
         echo Close('div');
     echo Close('div');
         
+    //Partida
+    $lista_partidas_combo = combobox($partidas, array('label' => 'nombre', 'value' => 'id'), array('name' => 'partida_id', 'id' => 'partida_id', 'class' => 'combobox form-control input-sm'), true);
+    echo Open('div', array('class' => 'col-md-5 form-group'));
+        echo Open('div', array('class' => 'input-group has-success'));
+            echo tagcontent('span', '<span class="glyphicon glyphicon-list"></span> Partida:', array('class' => 'input-group-addon'));
+            echo $lista_partidas_combo; 
+        echo Close('div');
+    echo Close('div');
+        
     echo tagcontent('button', '<span class="glyphicon glyphicon-search"></span> Buscar', array('name' => 'btnreportes', 'class' => 'btn btn-success btn-sm  col-md-1', 'id' => 'ajaxformbtn', 'type' => 'submit', 'data-target' => 'ordenes_list'));
     
     echo Close('form');
