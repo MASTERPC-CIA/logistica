@@ -29,6 +29,7 @@ $caja_texto = '<input type="text" id="search" placeholder="Ingrese valor a busca
                     echo '<th>APROBADO POR</th>';
                     echo '<th>FECHA</th>';
                     echo '<th>HORA</th>';
+                    echo '<th>ESTADO</th>';
                     echo '<th class="actions" style="text-align:center">ACCIONES</th>';
                 echo '</thead>';
                 echo '<tbody>';
@@ -36,6 +37,7 @@ $caja_texto = '<input type="text" id="search" placeholder="Ingrese valor a busca
                         $data = json_decode($data);
                         $sumatoria_total = 0;
                         foreach ($data as $val) {
+                            $estado = $val->estado == '1' ? 'Activa' : 'Anulada';
                             echo Open('tr');
                                echo tagcontent('td class="actions"', $val->id);
                                echo tagcontent('td', $val->numero);
@@ -44,6 +46,7 @@ $caja_texto = '<input type="text" id="search" placeholder="Ingrese valor a busca
                                 echo tagcontent('td', $val->aprobado_por);
                                 echo tagcontent('td', $val->fecha);
                                 echo tagcontent('td', $val->hora);
+                                echo tagcontent('td', $estado);
                                 echo '<td class="actions">';
                                 ?>
                                 <button type="button"  title = "Imprimir Orden " data-target="ordenes_list" class="btn btn-default fa fa-print" id="ajaxpanelbtn" data-url="<?php echo base_url('logistica/ordengasto/printOrden/'.$val->id)?>"></button>

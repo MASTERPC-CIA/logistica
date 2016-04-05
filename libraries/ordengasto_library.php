@@ -48,7 +48,8 @@ class ordengasto_library {
     /* Imprime el listado segun los parametros especificados */
 
     function printListado($fechaDesde, $fechaHasta, $empleadoId, $partida_id) {
-        $where = array('ord_estado !='=>'-1');
+        $where = array();
+//        $where = array('ord_estado !='=>'-1');
         $join_clause = array();
 
         //Enviamos los valores en vacio si son -1
@@ -69,7 +70,7 @@ class ordengasto_library {
         $join_clause[] = array('table' => 'billing_empleado emp_aprob', 'condition' => 'ord_user_aprobacion = emp_aprob.id');
         $join_clause[] = array('table' => 'orden_gasto_detalle', 'condition' => 'odet_orden_id = ord.id');
 
-        $fields ='ord.id, ord_numero numero, ord_fecha fecha, ord_hora hora, '
+        $fields ='ord.id, ord_numero numero, ord_fecha fecha, ord_hora hora, ord_estado estado,'
                 . 'ord_total total, CONCAT_WS(" ", emp_realiz.nombres, emp_realiz.apellidos) realizado_por,'
                 . 'CONCAT_WS(" ", emp_aprob.nombres, emp_aprob.apellidos) aprobado_por';
         $json_res = $this->ci->generic_model->get_join('orden_gasto ord', $where, $join_clause, $fields, 0, null, 'ord.id');
