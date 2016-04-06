@@ -28,6 +28,19 @@
             echo $lista_partidas_combo; 
         echo Close('div');
     echo Close('div');
+    
+    //Estado
+    $estado = array();
+    $estado[] = (object)array('id'=>'1', 'nombre'=>'Activas');
+    $estado[] = (object)array('id'=>'-1', 'nombre'=>'Anuladas');
+    $lista_estado = combobox($estado, array('label' => 'nombre', 'value' => 'id'), 
+            array('name' => 'estado', 'id' => 'estado', 'class' => 'combobox form-control input-sm'), true, '', '-2');
+    echo Open('div', array('class' => 'col-md-5 form-group'));
+        echo Open('div', array('class' => 'input-group has-success'));
+            echo tagcontent('span', '<span class="glyphicon glyphicon-check"></span> Estado:', array('class' => 'input-group-addon'));
+            echo $lista_estado; 
+        echo Close('div');
+    echo Close('div');
         
     echo tagcontent('button', '<span class="glyphicon glyphicon-search"></span> Buscar', array('name' => 'btnreportes', 'class' => 'btn btn-success btn-sm  col-md-1', 'id' => 'ajaxformbtn', 'type' => 'submit', 'data-target' => 'ordenes_list'));
     

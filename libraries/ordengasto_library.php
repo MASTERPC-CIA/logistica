@@ -52,7 +52,7 @@ class ordengasto_library {
 
     /* Imprime el listado segun los parametros especificados */
 
-    function printListado($fechaDesde, $fechaHasta, $empleadoId, $partida_id) {
+    function printListado($fechaDesde, $fechaHasta, $empleadoId, $partida_id, $estado) {
         $where = array();
 //        $where = array('ord_estado !='=>'-1');
         $join_clause = array();
@@ -61,10 +61,13 @@ class ordengasto_library {
         /* Programacion Funcional de un IF. (condicion ? true : false) */
         $empleadoId = ($empleadoId == -1 ? '' : $empleadoId);
         $partida_id = ($partida_id == -1 ? '' : $partida_id);
+        $estado = ($estado == -2 ? '' : $estado);
 
         if (!empty($empleadoId)): $where['ord_user_id'] = $empleadoId;
         endif;
         if (!empty($partida_id)): $where['odet_partida_id'] = $partida_id;
+        endif;
+        if (!empty($estado)): $where['ord_estado'] = $estado;
         endif;
         if (!empty($fechaDesde)): $where['ord_fecha >='] = $fechaDesde;
         endif;
