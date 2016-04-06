@@ -24,6 +24,8 @@ $caja_texto = '<input type="text" id="search" placeholder="Ingrese valor a busca
                 echo '<thead>';
                     echo '<th class="actions" style="text-align:center">ID</th>';
                     echo '<th>NUMERO</th>';
+                    echo '<th>BENEFICIARIO</th>';
+                    echo '<th>CONCEPTO</th>';
                     echo '<th>VALOR</th>';
                     echo '<th>REALIZADO POR</th>';
                     echo '<th>APROBADO POR</th>';
@@ -41,6 +43,8 @@ $caja_texto = '<input type="text" id="search" placeholder="Ingrese valor a busca
                             echo Open('tr');
                                 echo tagcontent('td class="actions"', $val->id);
                                 echo tagcontent('td', $val->numero);
+                                echo tagcontent('td', $val->beneficiario);
+                                echo tagcontent('td', $val->concepto);
                                 echo tagcontent('td', '$ '. $val->total);
                                 echo tagcontent('td', $val->realizado_por);
                                 echo tagcontent('td', $val->aprobado_por);

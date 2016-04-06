@@ -109,6 +109,7 @@ class Ordengasto extends MX_Controller {
             echo $this->res_msj;
             $this->db->trans_commit();
             echo tagcontent('script', '$("#orden_out").hide(500);');
+            $this->printOrden($id_orden);
         }
     }
 
