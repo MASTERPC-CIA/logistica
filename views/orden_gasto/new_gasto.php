@@ -54,17 +54,29 @@ echo tagcontent('div', '', array('id'=>'msj_out'));
         } else if (subtarea_id != datum.parent) {//Validamos que la partida pertenezca a la subtarea
             alertaError('Esta partida no pertenece a la Subtarea seleccionada');
         } else {
+            //Verificamos si ya existe una misma partida para restar el presupuesto
+            presupuesto = null;
+            $('.ids_partida').each(function(index, value){
+                id_partida_listada = $(this).val();
+                if(id_partida == id_partida_listada){
+                    //Tomamos el ultimo valor del saldo vigente como presupuesto
+                    count = $(this).attr('count');
+                    saldo_vigente_anterior = $('#hidden_saldo_vigente'+count).val();
+                    //Enviamos este valor como nuevo presupuesto
+                    presupuesto = saldo_vigente_anterior;
+                }
+            });
             $.ajax({
                 type: "POST",
                 url: "ordengasto/loadDetalleView",
                 dataType: 'html',
-                data: {id_partida: id_partida, cod_partida: cod_partida, programa_id: programa_id, count_partidas: (parseInt(count_partidas) + 1)},
+                data: {id_partida: id_partida, cod_partida: cod_partida, 
+                    programa_id: programa_id, count_partidas: (parseInt(count_partidas) + 1),
+                    presupuesto: presupuesto},
                 success: function (row) {
-                    console.log(row);
                     $('#partida_detalle').append(row);
                     $('#partida_id').text('');
                     count_partidas++;
-                    //                    console.log('Contador: '+count_partidas);
                 }
             });
         }

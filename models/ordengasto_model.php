@@ -137,7 +137,17 @@ class Ordengasto_model extends CI_Model {
                 'odet_gasto_acumulado' => $partida['odet_gasto_acumulado'],
                 'odet_saldo_vigente' => $partida['odet_saldo_vigente'],
             );
-               
+//            switch ($partida['odet_tipo_beneficiario']) {
+//                case 'E':
+//                    $array_detalle['odet_empleado_id'] = $partida['odet_beneficiario_id'];
+//                    break;
+//                case 'B':
+//                    $array_detalle['odet_beneficiario_id'] = $partida['odet_beneficiario_id'];
+//                    break;
+//                default:
+//                    break;
+//            }
+            
             $this->generic_model->update_by_id('orden_gasto_detalle', $array_detalle, $partida['id']);
             //Calculamos la diferencia para actualizar dicho valor que puede ser positivo o negativo
             $diferencia = $partida['valor_anterior'] - $partida['odet_gasto'];

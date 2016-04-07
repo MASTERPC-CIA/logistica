@@ -25,13 +25,16 @@ switch ($programa_id) {
 }
 $btn_remove = tagcontent('button', 'X', array('class'=>'btn btn-danger btn-xs','id'=>'ajaxformbtn','data-target'=>'', 'count'=>$count_partidas));
 /*Hiddens a enviar*/
-echo input(array('type'=>'hidden', 'id'=>'hidden_id_partida'.$count_partidas, 'name'=>'partidas['.$count_partidas.'][odet_partida_id]', 'value'=>$id_partida));
+echo input(array('type'=>'hidden', 'id'=>'hidden_id_partida'.$count_partidas, 'name'=>'partidas['.$count_partidas.'][odet_partida_id]', 'value'=>$id_partida, 'count'=>$count_partidas, 'class'=>'ids_partida'));
 echo input(array('type'=>'hidden', 'id'=>'hidden_beneficiario_id'.$count_partidas, 'name'=>'partidas['.$count_partidas.'][odet_beneficiario_id]', 'value'=>$beneficiario_id));
-echo input(array('type'=>'hidden', 'id'=>'hidden_empleado_id'.$count_partidas, 'name'=>'partidas['.$count_partidas.'][odet_empleado_id]', 'value'=>''));
+echo input(array('type'=>'hidden', 'id'=>'hidden_empleado_id'.$count_partidas, 'name'=>'partidas['.$count_partidas.'][odet_empleado_id]', 'value'=>$empleado_id));
 echo input(array('type'=>'hidden', 'id'=>'hidden_programa_id', 'name'=>'partidas['.$count_partidas.'][odet_programa_id]', 'value'=>$programa_id));
 echo input(array('type'=>'hidden', 'id'=>'hidden_asignacion'.$count_partidas, 'name'=>'partidas['.$count_partidas.'][odet_asignacion]', 'value'=>$presupuesto_inicial));
 echo input(array('type'=>'hidden', 'id'=>'hidden_gasto_acumulado'.$count_partidas, 'name'=>'partidas['.$count_partidas.'][odet_gasto_acumulado]', 'value'=>$gasto_acumulado));
 echo input(array('type'=>'hidden', 'id'=>'hidden_saldo_vigente'.$count_partidas, 'name'=>'partidas['.$count_partidas.'][odet_saldo_vigente]', 'value'=>$saldo_vigente));
+
+/*Hiden para acumular saldo de una partida*/
+echo input(array('type'=>'hidden', 'id'=>'saldo_partida['.$id_partida.']', 'name'=>'saldo_partida['.$id_partida.']', 'value'=>$saldo_vigente));
 
 //No permitimos eliminar partidas desde editar
 if(isset($editar_orden)){
@@ -97,6 +100,9 @@ echo Close('tr');
         //Calculamos el saldo vigente
         saldo_inicial = $('#hidden_asignacion'+count_partidas).val();
         saldo_nuevo = saldo_inicial - valor;
+        if(saldo_nuevo < 0){
+            alertaError("El valor excede el presupuesto!");
+        }
         $('#td_saldo_vigente'+count_partidas).text(saldo_nuevo);
         $('#hidden_saldo_vigente'+count_partidas).val(saldo_nuevo);
         

@@ -58,11 +58,13 @@ echo input(array('type'=>'hidden', 'id'=>'input_total', 'name'=>'input_total', '
                 $res['presupuesto_inicial'] = $partida->odet_asignacion;
                 //Estos campos son diferentes segun el tipo
                 if($partida->odet_tipo_beneficiario == 'E'){
-                    $res['beneficiario_id'] = $partida->odet_empleado_id;
+                    $res['beneficiario_id'] = '';
+                    $res['empleado_id'] = $partida->odet_empleado_id;
                     $res['beneficiario_ruc'] = $partida->empleado_ruc;
                     $res['beneficiario_nombre'] = $partida->empleado_nombres;
                 }
                 if($partida->odet_tipo_beneficiario == 'B'){
+                    $res['empleado_id'] = '';
                     $res['beneficiario_id'] = $partida->odet_beneficiario_id;
                     $res['beneficiario_ruc'] = $partida->beneficiario_ruc;
                     $res['beneficiario_nombre'] = $partida->beneficiario_nombres;

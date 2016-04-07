@@ -40,8 +40,16 @@ class Ordengasto extends MX_Controller {
         $res['cod_partida'] = $this->input->post('cod_partida');
         $res['programa_id'] = $this->input->post('programa_id');
         $res['count_partidas'] = $this->input->post('count_partidas');
-        $res['presupuesto_inicial'] = $this->generic_model->get_val_where('plan_proyectos', array('id' => $id_partida), 'presupuesto_inicial');
-        //Campos vacios para reutilizar la misma vista para editar
+        $presupuesto = $this->input->post('presupuesto');
+        if($presupuesto == null){//Partida nueva
+            $presupuesto = $this->generic_model->get_val_where('plan_proyectos', array('id' => $id_partida), 'presupuesto_vigente');
+        }
+        elseif($presupuesto <= '0'){
+            echo tagcontent('script', 'alertaError("Presupuesto insuficiente!")');
+            die();
+        }        
+        $res['presupuesto_inicial'] = $presupuesto;
+//Campos vacios para reutilizar la misma vista para editar
         $res['beneficiario_id'] = '';
         $res['beneficiario_ruc'] = '';
         $res['beneficiario_nombre'] = '';
