@@ -42,6 +42,7 @@ class ordengasto_library {
     public function reporteView() {
         $data_search['lista_empleado'] = $this->ci->generic_model->get('billing_empleado', array(), 'id, CONCAT_WS(" ", nombres, apellidos) nom_empleado');
         $data_search['partidas'] = $this->ci->generic_model->get('plan_proyectos', array('tipo_id' => '7'), 'id, CONCAT_WS(" ", cod, nombre) nombre');
+        $data_search['beneficiarios'] = $this->ci->generic_model->get('beneficiario_partidas', array(), 'id, ben_nombre nombre');
 //        $data_search['tipos_list'] = $this->ci->generic_model->get('plan_proyectos_tipo');
         $res['view'] = $this->ci->load->view('orden_gasto/reporte_view', $data_search, TRUE);
 //        $res['view'] = $this->load->view('common/crud/crud_view_datatable', $crud);
@@ -52,7 +53,7 @@ class ordengasto_library {
 
     /* Imprime el listado segun los parametros especificados */
 
-    function printListado($fechaDesde, $fechaHasta, $empleadoId, $partida_id, $estado) {
+    function printListado($fechaDesde, $fechaHasta, $empleadoId, $partida_id, $estado, $beneficiario) {
         $where = array();
 //        $where = array('ord_estado !='=>'-1');
         $join_clause = array();
@@ -62,12 +63,14 @@ class ordengasto_library {
         $empleadoId = ($empleadoId == -1 ? '' : $empleadoId);
         $partida_id = ($partida_id == -1 ? '' : $partida_id);
         $estado = ($estado == -2 ? '' : $estado);
-
+        $beneficiario = ($beneficiario == -1 ? '' : $beneficiario);
         if (!empty($empleadoId)): $where['ord_user_id'] = $empleadoId;
         endif;
         if (!empty($partida_id)): $where['odet_partida_id'] = $partida_id;
         endif;
         if (!empty($estado)): $where['ord_estado'] = $estado;
+        endif;
+        if (!empty($beneficiario)): $where['odet_beneficiario_id'] = $beneficiario;
         endif;
         if (!empty($fechaDesde)): $where['ord_fecha >='] = $fechaDesde;
         endif;
@@ -106,7 +109,7 @@ class ordengasto_library {
                 $beneficiario = $this->ci->generic_model->get_val_where('billing_empleado', $where, 'apellidos');
                 break;
             case 'B':
-                $where['id']= $id_beneficiario;
+                $where['id'] = $id_beneficiario;
                 $beneficiario = $this->ci->generic_model->get_val_where('beneficiario_partidas', $where, 'ben_nombre');
                 break;
             default:

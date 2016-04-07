@@ -112,5 +112,7 @@ echo input(array('type'=>'hidden', 'id'=>'input_total', 'name'=>'input_total', '
 <!--<div id="partida_detalle">
     
 </div>-->
-
+<script>
+    
+</script>
 

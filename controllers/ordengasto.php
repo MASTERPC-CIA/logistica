@@ -121,8 +121,9 @@ class Ordengasto extends MX_Controller {
         $empleadoId = $this->input->post('empleado_id');
         $partida_id = $this->input->post('partida_id');
         $estado = $this->input->post('estado');
+        $beneficiario = $this->input->post('beneficiario_id');
 
-        $this->ordengasto_library->printListado($fechaDesde, $fechaHasta, $empleadoId, $partida_id, $estado);
+        $this->ordengasto_library->printListado($fechaDesde, $fechaHasta, $empleadoId, $partida_id, $estado, $beneficiario);
     }
 
     /* Muestra una orden de gasto para imprimirla */

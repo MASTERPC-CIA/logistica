@@ -70,7 +70,9 @@ $caja_texto = '<input type="text" id="search" placeholder="Ingrese valor a busca
                         echo Open('tr');
                                echo tagcontent('td');
                                echo tagcontent('td');
-                               echo tagcontent('th', $sumatoria_total);
+                               echo tagcontent('td');
+                               echo tagcontent('td');
+                               echo tagcontent('th', '$ '.round($sumatoria_total, 2));
                                echo tagcontent('td');
                                echo tagcontent('td');
                                echo tagcontent('td');
