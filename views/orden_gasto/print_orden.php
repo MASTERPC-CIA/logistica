@@ -6,9 +6,8 @@
 date_default_timezone_set('America/Guayaquil');
 
 echo tagcontent('button', '<span class="glyphicon glyphicon-print"></span> Imprimir', array('id' => 'printbtn', 'data-target' => 'print_orden', 'class' => 'btn btn-default pull-left'));
-$this->load->view('common/hmc_head/encabezado_cuenca'); //Encabezado para el hospital militar
-echo lineBreak2(1, array('class'=>'clear'));
 echo Open('div', array('id' => 'print_orden'));
+$this->load->view('common/hmc_head/encabezado_cuenca'); //Encabezado para el hospital militar
 ?>
 <!--TABLA 1 HEADER-->
 <table class="table table_ordengasto" style=" border: 1px solid black;">
