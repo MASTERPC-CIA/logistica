@@ -10,7 +10,7 @@ echo Open('div', array('id' => 'print_orden'));
 $this->load->view('common/hmc_head/encabezado_cuenca'); //Encabezado para el hospital militar
 ?>
 <!--TABLA 1 HEADER-->
-<table class="table table_ordengasto" style=" border: 1px solid black;">
+<table id="table_ordengasto" class="ordengasto table" style=" border: 1px solid black;">
     <thead>
         <tr>
             <th colspan="2" style="text-align: center">EJERCITO ECUATORIANO</th>
@@ -31,7 +31,7 @@ $this->load->view('common/hmc_head/encabezado_cuenca'); //Encabezado para el hos
 </table>
 
 <!--TABLA 2 ENCABEZADO ORDEN-->
-<table class="table table_ordengasto" style=" border: 1px solid black;">
+<table id="table_ordengasto" class="ordengasto table" style=" border: 1px solid black;">
     <thead>
         <tr>
             <th rowspan="2" style="vertical-align: middle">FECHA</th>
@@ -111,7 +111,7 @@ $this->load->view('common/hmc_head/encabezado_cuenca'); //Encabezado para el hos
 </table>
 
 <!--TABLA 3: DETALLE DE PARTIDAS-->
-<table class="table table_ordengasto" style=" border: 1px solid black;">
+<table id="table_ordengasto" class="ordengasto table" style=" border: 1px solid black;">
     <thead>
         <tr>
             <th rowspan="2">CODIGO<br>PRESUPUEST.</th>
@@ -195,7 +195,7 @@ $this->load->view('common/hmc_head/encabezado_cuenca'); //Encabezado para el hos
 </table>
 
 <!--TABLA 4: PIES Y FIRMAS-->
-<table class="table table_ordengasto"style=" border: 1px solid black;">
+<table id="table_ordengasto" class="ordengasto table"style=" border: 1px solid black;">
     <tbody>
         <tr>
             <td>ELABORADO POR</td>
