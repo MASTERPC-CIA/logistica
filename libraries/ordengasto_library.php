@@ -14,9 +14,19 @@ class ordengasto_library {
     /* Carga la vista para generar una orden de gasto */
 
     public function newGastoView() {
-        //Tipo 1: Area funcional
+        //Filtramos las partidas segun el rol del usuario
+        $esAdministrativoPersonal = $this->ci->user->check_permission(array('logistica_personal', 'compras'), $this->ci->user->id);
+        $esAdministrativoSanidad = $this->ci->user->check_permission(array('logistica_sanidad', 'compras'), $this->ci->user->id);
 
-        $areas_func_list = $this->ci->generic_model->get('plan_proyectos', array('tipo_id' => '1'), 'id, cod, nombre');
+        //Tipo 1: Area funcional
+        $where = array ('tipo_id' => '1');
+        //Filtramos sus permisos a la base de datos
+        if ($esAdministrativoPersonal && $esAdministrativoSanidad): 
+        elseif ($esAdministrativoPersonal): $where['area_cod'] ='A';
+        elseif  ($esAdministrativoSanidad): $where['area_cod'] ='S';
+        endif;
+
+        $areas_func_list = $this->ci->generic_model->get('plan_proyectos', $where, 'id, cod, nombre');
         $empleados = $this->ci->generic_model->get('billing_empleado', array(), 'id, CONCAT_WS(" ", nombres, apellidos) nombres');
 //        print_r($empleados);
         $data_orden['areas_list'] = $areas_func_list;
@@ -40,8 +50,21 @@ class ordengasto_library {
     /* Carga la vista para generar un reporte de las ordenes de gasto */
 
     public function reporteView() {
+        //Filtramos las partidas segun el rol del usuario
+        $esAdministrativoPersonal = $this->ci->user->check_permission(array('logistica_personal', 'compras'), $this->ci->user->id);
+        $esAdministrativoSanidad = $this->ci->user->check_permission(array('logistica_sanidad', 'compras'), $this->ci->user->id);
+
+//        echo '<br>Personal: '.$esAdministrativoPersonal;
+//        echo '<br>Sanidad: '.$esAdministrativoSanidad;
+        //Tipo 7: Partida
+        $where = array ('tipo_id' => '7');
+        //Filtramos sus permisos a la base de datos
+        if ($esAdministrativoPersonal && $esAdministrativoSanidad): 
+        elseif ($esAdministrativoPersonal): $where['area_cod'] ='A';
+        elseif  ($esAdministrativoSanidad): $where['area_cod'] ='S';
+        endif;
+        $data_search['partidas'] = $this->ci->generic_model->get('plan_proyectos', $where, 'id, CONCAT_WS(" ", cod, nombre) nombre');
         $data_search['lista_empleado'] = $this->ci->generic_model->get('billing_empleado', array(), 'id, CONCAT_WS(" ", nombres, apellidos) nom_empleado');
-        $data_search['partidas'] = $this->ci->generic_model->get('plan_proyectos', array('tipo_id' => '7'), 'id, CONCAT_WS(" ", cod, nombre) nombre');
         $data_search['beneficiarios'] = $this->ci->generic_model->get('beneficiario_partidas', array(), 'id, ben_nombre nombre');
 //        $data_search['tipos_list'] = $this->ci->generic_model->get('plan_proyectos_tipo');
         $res['view'] = $this->ci->load->view('orden_gasto/reporte_view', $data_search, TRUE);

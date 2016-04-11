@@ -11,7 +11,19 @@ class presupuesto_library {
     /* Carga la vista para generar un reporte de presupuestos */
 
     public function reporteView() {
-        $data_search['areas_list'] = $this->ci->generic_model->get('plan_proyectos_area');
+        //Filtramos las partidas segun el rol del usuario
+        $esAdministrativoPersonal = $this->ci->user->check_permission(array('logistica_personal', 'compras'), $this->ci->user->id);
+        $esAdministrativoSanidad = $this->ci->user->check_permission(array('logistica_sanidad', 'compras'), $this->ci->user->id);
+
+//        echo '<br>Personal: '.$esAdministrativoPersonal;
+//        echo '<br>Sanidad: '.$esAdministrativoSanidad;
+        $where = array ();
+        //Filtramos sus permisos a la base de datos
+        if ($esAdministrativoPersonal && $esAdministrativoSanidad): 
+        elseif ($esAdministrativoPersonal): $where['cod'] ='A';
+        elseif  ($esAdministrativoSanidad): $where['cod'] ='S';
+        endif;
+        $data_search['areas_list'] = $this->ci->generic_model->get('plan_proyectos_area', $where);
         $data_search['tipos_list'] = $this->ci->generic_model->get('plan_proyectos_tipo');
         $res['view'] = $this->ci->load->view('presupuesto/reporte_view', $data_search, TRUE);
 //        $res['view'] = $this->load->view('common/crud/crud_view_datatable', $crud);
@@ -35,7 +47,7 @@ class presupuesto_library {
         endif;
         if (!empty($tipo)): $where['tipo_id'] = $tipo;
         endif;
-
+        
         $join_clause[] = array('table' => 'plan_proyectos_area area', 'condition' => 'area_cod = area.cod');
         $join_clause[] = array('table' => 'plan_proyectos_tipo tipo', 'condition' => 'tipo_id = tipo.id');
 
